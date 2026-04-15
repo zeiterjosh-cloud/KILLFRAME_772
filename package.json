@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "High-retention addictive app generation framework with game and money-app modes",
   "main": "src/framework.js",
+  "exports": {
+    ".": "./src/framework.js"
+  },
   "scripts": {
     "start": "python3 -m http.server 8080",
     "test": "node src/examples.js",
@@ -15,8 +18,28 @@
     "retention",
     "monetization",
     "idle",
-    "clicker"
+    "clicker",
+    "generator",
+    "framework",
+    "mobile",
+    "gamification"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeiterjosh-cloud/KILLFRAME_772.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zeiterjosh-cloud/KILLFRAME_772/issues"
+  },
+  "homepage": "https://github.com/zeiterjosh-cloud/KILLFRAME_772#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ]
 }
