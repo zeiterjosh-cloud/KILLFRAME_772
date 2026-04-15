@@ -1,0 +1,387 @@
+/* =========================================================================
+   styles.css — KILLFRAME_772 Builder UI
+   ========================================================================= */
+
+/* ── Reset & base ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d1117;
+  --surface:   #161b22;
+  --surface2:  #21262d;
+  --border:    #30363d;
+  --text:      #e6edf3;
+  --muted:     #8b949e;
+  --blue:      #58a6ff;
+  --green:     #3fb950;
+  --yellow:    #f0a500;
+  --red:       #f85149;
+  --purple:    #bc8cff;
+  --radius:    10px;
+  --shadow:    0 4px 24px rgba(0,0,0,.45);
+  --font:      'Inter', system-ui, -apple-system, sans-serif;
+  --mono:      'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4 { line-height: 1.3; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+.app-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px 64px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.app-header {
+  padding: 28px 0 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.app-header h1 {
+  font-size: 1.7rem;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header p {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: .9rem;
+}
+
+/* ── Mode tabs ───────────────────────────────────────────────────────────── */
+.mode-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.mode-tab {
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: .9rem;
+  font-weight: 600;
+  transition: all .18s;
+}
+
+.mode-tab:hover {
+  border-color: var(--blue);
+  color: var(--text);
+}
+
+.mode-tab.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #0d1117;
+}
+
+/* ── Mode info card ──────────────────────────────────────────────────────── */
+.mode-info {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+#mode-desc { color: var(--muted); font-size: .9rem; margin-bottom: 6px; }
+#mode-question { color: var(--yellow); font-size: .88rem; font-style: italic; }
+
+/* ── Input card ──────────────────────────────────────────────────────────── */
+.input-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.input-card h2 {
+  font-size: 1rem;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: .95rem;
+  font-family: var(--font);
+  transition: border-color .18s;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+
+.field input::placeholder,
+.field textarea::placeholder { color: var(--muted); }
+
+/* Shake animation for empty-input validation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60%  { transform: translateX(-6px); }
+  40%, 80%  { transform: translateX(6px); }
+}
+
+.shake { animation: shake .35s ease; border-color: var(--red) !important; }
+
+/* ── Generate button ─────────────────────────────────────────────────────── */
+.generate-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--blue);
+  color: #0d1117;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .18s, transform .1s;
+  letter-spacing: .03em;
+}
+
+.generate-btn:hover  { background: #79c0ff; }
+.generate-btn:active { transform: scale(.97); }
+.generate-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+/* ── Pipeline steps ──────────────────────────────────────────────────────── */
+.pipeline-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 24px;
+  margin-bottom: 16px;
+}
+
+.pipeline-card h2 {
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.pipeline-step {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .88rem;
+}
+
+.pipeline-step:last-child { border-bottom: none; }
+
+.step-label {
+  color: var(--green);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.step-summary { color: var(--muted); }
+
+/* ── Validation box ──────────────────────────────────────────────────────── */
+.validation-box {
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  font-size: .88rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.validation-box.pass { border-color: var(--green); }
+.validation-box.fail { border-color: var(--red); }
+
+.validation-box strong { display: block; margin-bottom: 8px; font-size: .95rem; }
+
+.validation-box ul { list-style: none; padding: 0; }
+.validation-box li { padding: 3px 0; }
+.v-pass { color: var(--green); }
+.v-fail { color: var(--red); }
+
+/* ── Output panel ────────────────────────────────────────────────────────── */
+.output-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.output-card h2 {
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.placeholder {
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.error { color: var(--red); padding: 16px 0; }
+
+.output-section {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.output-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.output-section h3 {
+  color: var(--blue);
+  font-size: .95rem;
+  margin-bottom: 10px;
+}
+
+.section-body {
+  color: var(--text);
+  font-size: .92rem;
+  line-height: 1.7;
+}
+
+.section-body ul {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+
+.section-body li { margin: 3px 0; }
+
+/* ── Code blocks ─────────────────────────────────────────────────────────── */
+.code-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: .82rem;
+  line-height: 1.6;
+  color: #e6edf3;
+  white-space: pre;
+  max-height: 480px;
+}
+
+/* ── Examples panel ──────────────────────────────────────────────────────── */
+.examples-section { margin-bottom: 24px; }
+
+.examples-toggle {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 18px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: .88rem;
+  font-weight: 600;
+  transition: background .18s;
+}
+
+.examples-toggle:hover { background: var(--surface); }
+
+.examples-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 8px;
+}
+
+.examples-panel.hidden { display: none; }
+
+.examples-panel h3 {
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.example-chip {
+  display: inline-block;
+  margin: 4px;
+  padding: 7px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text);
+  font-size: .85rem;
+  cursor: pointer;
+  transition: all .18s;
+}
+
+.example-chip:hover {
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.app-footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: .8rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .app-header h1 { font-size: 1.3rem; }
+  .mode-tab { padding: 8px 14px; font-size: .82rem; }
+  .input-card, .output-card, .pipeline-card { padding: 16px; }
+}

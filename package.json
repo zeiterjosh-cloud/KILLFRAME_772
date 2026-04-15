@@ -1,0 +1,12 @@
+{
+  "name": "killframe-772",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Addictive Game & Money-Making App Builder Framework",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node --input-type=module src/test.js"
+  },
+  "keywords": ["game-design", "monetization", "app-builder", "retention"],
+  "license": "MIT"
+}

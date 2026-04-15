@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KILLFRAME_772 — Game & App Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/styles.css" />
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <h1>⚡ KILLFRAME_772</h1>
+    <p>
+      Build high-retention games and money-making apps — with addictive core loops,
+      progression systems, and monetization baked in from the start.
+    </p>
+  </header>
+
+  <!-- ── Mode selector ───────────────────────────────────────────────────── -->
+  <div class="mode-tabs" role="tablist" aria-label="Select operating mode">
+    <button class="mode-tab" data-mode="game"   role="tab" aria-selected="true">🎮 Addictive Game</button>
+    <button class="mode-tab" data-mode="app"    role="tab" aria-selected="false">💰 Money-Making App</button>
+    <button class="mode-tab" data-mode="hybrid" role="tab" aria-selected="false">🔥 Hybrid (Game + Revenue)</button>
+  </div>
+
+  <!-- ── Mode description card ───────────────────────────────────────────── -->
+  <div class="mode-info" aria-live="polite">
+    <p id="mode-desc"></p>
+    <p id="mode-question"></p>
+  </div>
+
+  <!-- ── Input form ──────────────────────────────────────────────────────── -->
+  <section class="input-card">
+    <h2>📝 Describe Your Idea</h2>
+
+    <div class="field">
+      <label for="concept-input" id="concept-label">Game Concept</label>
+      <textarea
+        id="concept-input"
+        rows="3"
+        maxlength="500"
+        placeholder="e.g. Tap coins, upgrade miners, idle to riches"
+        aria-required="true"
+      ></textarea>
+    </div>
+
+    <div class="field">
+      <label for="audience-input" id="audience-label">Target Audience</label>
+      <input
+        type="text"
+        id="audience-input"
+        maxlength="120"
+        placeholder="e.g. Casual mobile players, 18-35"
+      />
+    </div>
+
+    <button class="generate-btn" id="generate-btn">🚀 Generate</button>
+  </section>
+
+  <!-- ── Examples ────────────────────────────────────────────────────────── -->
+  <section class="examples-section">
+    <button class="examples-toggle" id="load-example-btn">📚 Show Examples</button>
+    <div class="examples-panel hidden" id="examples-panel">
+      <h3>Reference Examples — click to load</h3>
+      <div id="examples-list"></div>
+    </div>
+  </section>
+
+  <!-- ── Pipeline steps ──────────────────────────────────────────────────── -->
+  <div class="pipeline-card" id="pipeline-card">
+    <h2>🔧 Pipeline Steps</h2>
+    <div id="pipeline-steps">
+      <p class="placeholder">Pipeline steps will appear here after generation.</p>
+    </div>
+  </div>
+
+  <!-- ── Validation ──────────────────────────────────────────────────────── -->
+  <div class="validation-box" id="validation-box" role="alert" aria-live="polite">
+    <!-- Populated by app.js -->
+  </div>
+
+  <!-- ── Output ──────────────────────────────────────────────────────────── -->
+  <section class="output-card">
+    <h2>📄 Structured Output</h2>
+    <div id="output-panel">
+      <p class="placeholder">Your output will appear here after you click Generate.</p>
+    </div>
+  </section>
+
+</div><!-- /.app-wrapper -->
+
+<footer class="app-footer">
+  <p>KILLFRAME_772 — Addictive Game &amp; Money-Making App Builder Framework</p>
+</footer>
+
+<script type="module" src="src/app.js"></script>
+</body>
+</html>
