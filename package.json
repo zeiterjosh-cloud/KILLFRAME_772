@@ -1,0 +1,22 @@
+{
+  "name": "killframe",
+  "version": "1.0.0",
+  "description": "High-retention addictive app generation framework with game and money-app modes",
+  "main": "src/framework.js",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node src/examples.js",
+    "validate": "node src/examples.js"
+  },
+  "keywords": [
+    "game",
+    "app",
+    "addictive",
+    "retention",
+    "monetization",
+    "idle",
+    "clicker"
+  ],
+  "author": "",
+  "license": "MIT"
+}
