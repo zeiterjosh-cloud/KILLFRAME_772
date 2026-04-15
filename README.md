@@ -4,19 +4,19 @@ KILLFRAME is a modular Three.js first-person shooter prototype with dedicated pl
 
 ## File Structure
 
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/index.html`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/main.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/player.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/weapon.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/enemy.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/killframe.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/ui.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/gameManager.js`
-- `/home/runner/work/KILLFRAME_772/KILLFRAME_772/styles.css`
+- `index.html`
+- `main.js`
+- `player.js`
+- `weapon.js`
+- `enemy.js`
+- `killframe.js`
+- `ui.js`
+- `gameManager.js`
+- `styles.css`
 
 ## Run in Browser
 
-From `/home/runner/work/KILLFRAME_772/KILLFRAME_772`:
+From the project root directory:
 
 ```bash
 npm install
