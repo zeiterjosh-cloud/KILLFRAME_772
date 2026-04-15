@@ -30,6 +30,22 @@ const MONETIZATION_MODELS = [
   'hybrid'
 ];
 
+// Game balance constants
+const GAME_CONSTANTS = {
+  BASE_CRIT_CHANCE: 0.1,
+  CRIT_LEVEL_MULTIPLIER: 0.05,
+  CRIT_DAMAGE_MULTIPLIER: 3,
+  BASE_MONSTER_HEALTH: 10,
+  HEALTH_PER_LEVEL: 5,
+  BOSS_HEALTH_MULTIPLIER: 2,
+  BASE_GOLD_REWARD: 5,
+  GOLD_PER_LEVEL: 2,
+  BOSS_GOLD_MULTIPLIER: 5,
+  UPGRADE_COST_MULTIPLIER: 1.5,
+  COMBO_TIMEOUT_MS: 500,
+  COMBO_GOLD_DIVISOR: 5
+};
+
 // ============================================================================
 // OUTPUT TEMPLATE STRUCTURE
 // ============================================================================
@@ -66,20 +82,36 @@ class AddictiveGameMode {
 
   /**
    * Validates that the game has a repeatable 10-second loop
+   * 
+   * A valid core loop should describe a repeatable cycle of:
+   * 1. Player action (tap, click, swipe, etc.)
+   * 2. Immediate feedback/reward
+   * 3. Progression toward a goal
+   * 
+   * Examples of valid loops:
+   * - "Tap → Earn → Upgrade → Repeat"
+   * - "Click enemy → Deal damage → Collect loot → Buy upgrades"
+   * - "Swipe to match → Score points → Unlock levels"
    */
   validateCoreLoop(spec) {
     // Check if core loop is defined and not empty
     if (!spec.coreLoop || spec.coreLoop.trim() === '') {
-      throw new Error('Game must have a repeatable 10-second loop with action → reward → progression');
+      throw new Error(
+        'Game must have a repeatable 10-second loop with action → reward → progression. ' +
+        'Example: "Tap → Earn → Upgrade → Repeat"'
+      );
     }
     // Core loop should contain action words suggesting a loop
-    const loopKeywords = ['tap', 'click', 'earn', 'upgrade', 'repeat', 'collect', 'build', 'defeat', 'score'];
+    const loopKeywords = ['tap', 'click', 'earn', 'upgrade', 'repeat', 'collect', 'build', 'defeat', 'score', 'swipe', 'match', 'unlock'];
     const hasLoopStructure = loopKeywords.some(keyword => 
       spec.coreLoop.toLowerCase().includes(keyword)
     );
     
     if (!hasLoopStructure && (!spec.systems.rewards || spec.systems.rewards.length === 0)) {
-      throw new Error('Game must have a repeatable 10-second loop with action → reward → progression');
+      throw new Error(
+        'Game must have a repeatable 10-second loop with action → reward → progression. ' +
+        'Include keywords like: tap, click, earn, upgrade, collect, score, etc.'
+      );
     }
     return true;
   }
@@ -503,5 +535,6 @@ module.exports = {
   MODE,
   GAME_TYPES,
   MONETIZATION_MODELS,
+  GAME_CONSTANTS,
   OutputTemplate
 };

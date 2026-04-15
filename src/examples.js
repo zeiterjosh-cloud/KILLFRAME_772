@@ -275,6 +275,22 @@ function generateGameExample() {
       }
     };
 
+    // Game balance constants
+    const BALANCE = {
+      BASE_CRIT_CHANCE: 0.1,
+      CRIT_LEVEL_MULTIPLIER: 0.05,
+      CRIT_DAMAGE_MULTIPLIER: 3,
+      BASE_MONSTER_HEALTH: 10,
+      HEALTH_PER_LEVEL: 5,
+      BOSS_HEALTH_MULTIPLIER: 2,
+      BASE_GOLD_REWARD: 5,
+      GOLD_PER_LEVEL: 2,
+      BOSS_GOLD_MULTIPLIER: 5,
+      UPGRADE_COST_MULTIPLIER: 1.5,
+      COMBO_TIMEOUT_MS: 500,
+      COMBO_GOLD_DIVISOR: 5
+    };
+
     const monsters = [
       { name: 'Goblin', emoji: '👹' },
       { name: 'Skeleton', emoji: '💀' },
@@ -291,8 +307,9 @@ function generateGameExample() {
     // Calculate damage
     function getDamage() {
       const base = state.upgrades.damage.level;
-      const isCrit = Math.random() < (0.1 + state.upgrades.crit.level * 0.05);
-      return { damage: isCrit ? base * 3 : base, isCrit };
+      const critChance = BALANCE.BASE_CRIT_CHANCE + state.upgrades.crit.level * BALANCE.CRIT_LEVEL_MULTIPLIER;
+      const isCrit = Math.random() < critChance;
+      return { damage: isCrit ? base * BALANCE.CRIT_DAMAGE_MULTIPLIER : base, isCrit };
     }
 
     // Tap handler
@@ -301,7 +318,7 @@ function generateGameExample() {
       const { damage, isCrit } = getDamage();
       
       // Update combo
-      if (now - state.lastTap < 500) {
+      if (now - state.lastTap < BALANCE.COMBO_TIMEOUT_MS) {
         state.combo++;
       } else {
         state.combo = 1;
@@ -356,7 +373,7 @@ function generateGameExample() {
 
     // Kill monster and spawn new one
     function killMonster() {
-      const goldEarned = state.monster.goldReward + Math.floor(state.combo / 5);
+      const goldEarned = state.monster.goldReward + Math.floor(state.combo / BALANCE.COMBO_GOLD_DIVISOR);
       state.gold += goldEarned;
       state.kills++;
       
@@ -377,15 +394,15 @@ function generateGameExample() {
       const monsterIndex = Math.min(Math.floor(state.level / 10), monsters.length - 1);
       const template = isBoss ? monsters[9] : monsters[monsterIndex % 9];
       
-      const healthMultiplier = isBoss ? 2 : 1;
-      const baseHealth = 10 + (state.level - 1) * 5;
+      const healthMultiplier = isBoss ? BALANCE.BOSS_HEALTH_MULTIPLIER : 1;
+      const baseHealth = BALANCE.BASE_MONSTER_HEALTH + (state.level - 1) * BALANCE.HEALTH_PER_LEVEL;
       
       state.monster = {
         name: isBoss ? 'BOSS: ' + template.name : template.name,
         emoji: template.emoji,
         health: baseHealth * healthMultiplier,
         maxHealth: baseHealth * healthMultiplier,
-        goldReward: 5 + state.level * 2 * (isBoss ? 5 : 1)
+        goldReward: BALANCE.BASE_GOLD_REWARD + state.level * BALANCE.GOLD_PER_LEVEL * (isBoss ? BALANCE.BOSS_GOLD_MULTIPLIER : 1)
       };
     }
 
@@ -395,7 +412,7 @@ function generateGameExample() {
       if (state.gold >= upgrade.cost) {
         state.gold -= upgrade.cost;
         upgrade.level++;
-        upgrade.cost = Math.floor(upgrade.cost * 1.5);
+        upgrade.cost = Math.floor(upgrade.cost * BALANCE.UPGRADE_COST_MULTIPLIER);
         updateUI();
       }
     }
