@@ -7,7 +7,7 @@ Thank you for your interest in contributing to KILLFRAME! This document provides
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/KILLFRAME_772.git
+   git clone https://github.com/<your-username>/KILLFRAME_772.git
    cd KILLFRAME_772
    ```
 3. **Install dependencies** (if any):
