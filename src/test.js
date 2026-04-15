@@ -39,7 +39,7 @@ const inputs = { concept: 'Tap coins to build an empire', audience: 'Casual game
 for (const mode of Object.values(MODE)) {
   const output = generateTemplate(mode, inputs);
   const { requiredSections } = getModeInfo(mode);
-  const missing = requiredSections.filter(s => !output[s] || !output[s].trim());
+  const missing = requiredSections.filter(sectionKey => !output[sectionKey] || !output[sectionKey].trim());
   assert(`${mode}: all required sections present`, missing.length === 0);
   assert(`${mode}: code section is non-trivial`, typeof output.code === 'string' && output.code.length > 50);
 }

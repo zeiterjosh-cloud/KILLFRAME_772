@@ -352,7 +352,7 @@ function generateHybridTemplate({ concept, audience }) {
     function render(){
       document.getElementById('score-box').textContent='Score: '+Math.floor(score);
       document.getElementById('coins-box').textContent='🪙 Coins: '+Math.floor(coins);
-      ['u1','u2'].forEach((id,i)=>{document.getElementById(id).disabled=coins<costs[i];});
+      ['u1','u2'].forEach((id,upgradeIndex)=>{document.getElementById(id).disabled=coins<costs[upgradeIndex];});
     }
   </script>
 </body>

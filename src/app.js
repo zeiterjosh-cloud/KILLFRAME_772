@@ -203,9 +203,10 @@ function escHtml(str) {
 function markdownLite(str) {
   return str
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^• (.+)$/gm, '<li>$1</li>')
-    .replace(/^(\d+)\. (.+)$/gm, '<li><strong>$1.</strong> $2</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    .replace(/^• (.+)$/gm, '<li class="bullet">$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm, '<li class="numbered"><strong>$1.</strong> $2</li>')
+    .replace(/(<li class="bullet">.*<\/li>\n?)+/g, '<ul>$&</ul>')
+    .replace(/(<li class="numbered">.*<\/li>\n?)+/g, '<ol>$&</ol>')
     .replace(/\n/g, '<br>');
 }
 

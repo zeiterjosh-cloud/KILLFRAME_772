@@ -350,8 +350,8 @@ const HYBRID_EXAMPLES = [
 
     function toggleCell(i) {
       if (timeLeft <= 0) return;
-      const idx = selected.indexOf(i);
-      if (idx >= 0) { selected.splice(idx); }
+      const cellIndex = selected.indexOf(i);
+      if (cellIndex >= 0) { selected.splice(cellIndex); }
       else { selected.push(i); }
       const word = selected.map(x => grid[x]).join('');
       document.getElementById('word-display').textContent = word || '—';

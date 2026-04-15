@@ -122,7 +122,7 @@ export function validate(output, modeId) {
  * @param {{ passed: boolean, results: Array }} validation
  * @returns {string}
  */
-export function summariseValidation(validation) {
+export function summarizeValidation(validation) {
   const lines = validation.results.map(
     (r) => `${r.passed ? '✅' : '❌'} ${r.label}: ${r.description}`
   );
