@@ -1,0 +1,160 @@
+Create high-retention, addictive games with simple mechanics and strong reward loops.
+
+🧠 Key Behavior Changes
+
+Instead of just “building a game,” the agent will:
+	•	Prioritize fun over features
+	•	Focus on repeatable gameplay loops
+	•	Optimize for engagement time + replayability
+
+🔥 What It Emphasizes
+
+Core Loop First
+
+Every game must answer:
+
+“What does the player do every 10 seconds?”
+
+Example:
+	•	Tap → earn coins → upgrade → repeat
+
+⸻
+
+Addictive Systems (REQUIRED)
+	•	Progression (levels, upgrades)
+	•	Rewards (coins, unlocks)
+	•	Feedback (animations, sounds)
+	•	Challenge (increasing difficulty)
+
+⸻
+
+Game Types It Defaults To
+	•	Idle/clicker games
+	•	Reaction/timing games
+	•	Simple arcade loops
+	•	Upgrade-based games
+
+👉 Because these are easiest to make addictive quickly
+
+⸻
+
+Output Example Structure
+	•	Game concept
+	•	Core loop
+	•	Systems (progression, rewards)
+	•	Full code
+	•	“Make it more addictive” upgrades
+
+⸻
+
+✅ Use This If:
+	•	You want viral/simple games
+	•	You’re experimenting fast
+	•	You want something people won’t put down
+
+⸻
+
+💰 2. Money-Making App Agent (Focused on Revenue)
+
+This version is tuned to build apps that can generate income.
+
+🎯 Core Goal
+
+Create apps that:
+	•	Solve a real problem
+	•	Keep users coming back
+	•	Monetize effectively
+
+⸻
+
+🧠 Key Behavior Changes
+
+Instead of just building something cool, it asks:
+	•	“Would someone PAY for this?”
+	•	“How does this make money?”
+	•	“Why would users return daily?”
+
+⸻
+
+💸 Monetization First Thinking
+
+Every app must include at least one:
+
+1. Subscription Model
+	•	Premium features
+	•	Locked content
+	•	Monthly value
+
+2. Freemium Upgrade
+	•	Free basic version
+	•	Paid upgrades
+
+3. Ad-Based (if appropriate)
+	•	Rewarded ads
+	•	Minimal interruption
+
+⸻
+
+🔥 What It Emphasizes
+
+Real-World Utility
+
+Examples:
+	•	Budget tracker (you’d actually use this 👀)
+	•	Habit tracker
+	•	AI tools
+	•	Productivity dashboards
+
+⸻
+
+Retention Systems
+	•	Daily streaks
+	•	Notifications
+	•	Progress tracking
+
+⸻
+
+Simplicity → Scale
+
+Start with:
+	•	1 core feature
+	•	Solve it REALLY well
+Then expand
+
+⸻
+
+Output Structure
+	•	Problem being solved
+	•	Target user
+	•	Monetization plan
+	•	MVP features
+	•	Full code
+	•	Growth ideas
+
+⸻
+
+✅ Use This If:
+	•	You want to make money
+	•	You want something useful (not just fun)
+	•	You’re building long-term projects
+
+⸻
+
+⚖️ Which One Should YOU Use?
+
+Based on what you’ve been doing:
+	•	You’ve built apps
+	•	You’ve experimented a lot
+	•	You’ve spent money trying ideas
+
+👉 You should actually use BOTH together strategically:
+
+🔥 Smart Combo Strategy:
+	1.	Use Game Agent
+→ Quickly build addictive apps
+	2.	Then run:
+→ “Convert this into a monetizable app”
+	3.	Add:
+	•	Premium upgrades
+	•	Cosmetics
+	•	Booster
