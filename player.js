@@ -11,6 +11,7 @@ export class PlayerController {
     this.deceleration = 14;
     this.maxSpeed = 8.75;
     this.input = { forward: 0, right: 0 };
+    this.keyState = { forward: false, back: false, left: false, right: false };
     this.velocity = new THREE.Vector3();
     this.forward = new THREE.Vector3();
     this.right = new THREE.Vector3();
@@ -48,10 +49,13 @@ export class PlayerController {
   }
 
   _setKey(code, value) {
-    if (code === 'KeyW') this.input.forward = value;
-    if (code === 'KeyS') this.input.forward = -value;
-    if (code === 'KeyD') this.input.right = value;
-    if (code === 'KeyA') this.input.right = -value;
+    const isDown = value === 1;
+    if (code === 'KeyW') this.keyState.forward = isDown;
+    if (code === 'KeyS') this.keyState.back = isDown;
+    if (code === 'KeyD') this.keyState.right = isDown;
+    if (code === 'KeyA') this.keyState.left = isDown;
+    this.input.forward = Number(this.keyState.forward) - Number(this.keyState.back);
+    this.input.right = Number(this.keyState.right) - Number(this.keyState.left);
   }
 
   addRecoil(kickAmount) {
