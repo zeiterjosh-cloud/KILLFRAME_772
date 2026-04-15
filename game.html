@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KILLFRAME — The Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-card-hover: #1a1a24;
+      --accent: #f0a500;
+      --accent-glow: rgba(240, 165, 0, 0.4);
+      --success: #22c55e;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --blue: #1f6feb;
+      --purple: #6e40c9;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .game-header {
+      text-align: center;
+      padding: 24px 16px 12px;
+      background: linear-gradient(180deg, rgba(240,165,0,0.08) 0%, transparent 100%);
+    }
+    .game-header h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .game-header .tagline {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 16px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Main game area */
+    .game-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    /* Tap button */
+    .tap-zone {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 16px 0 32px;
+    }
+    #tap-btn {
+      width: 100%;
+      height: 100%;
+      font-size: 64px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #1a1a24 0%, #0d0d12 100%);
+      border: 3px solid var(--accent);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 0 30px var(--accent-glow), inset 0 -4px 12px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #tap-btn:hover {
+      box-shadow: 0 0 50px var(--accent-glow), inset 0 -4px 12px rgba(0,0,0,0.4);
+    }
+    #tap-btn:active, #tap-btn.pressed {
+      transform: scale(0.92);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    #tap-btn .icon {
+      transition: transform 0.1s;
+    }
+    #tap-btn:active .icon, #tap-btn.pressed .icon {
+      transform: scale(1.1);
+    }
+
+    /* Floating labels container */
+    .float-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .float-label {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-shadow: 0 0 8px var(--accent-glow);
+      animation: floatUp 0.8s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-60px) scale(1.3); }
+    }
+
+    /* Per-second indicator */
+    .per-sec {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+    .per-sec span { color: var(--success); }
+
+    /* Upgrades section */
+    .upgrades-section {
+      width: 100%;
+      max-width: 500px;
+      padding: 0 16px;
+    }
+    .section-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--text-muted) 0%, transparent 100%);
+      opacity: 0.3;
+    }
+
+    .upgrade-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .upgrade-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .upgrade-card:hover:not(.locked) {
+      background: var(--bg-card-hover);
+      border-color: rgba(255,255,255,0.1);
+    }
+    .upgrade-card.locked {
+      opacity: 0.4;
+    }
+    .upgrade-card.affordable {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(240,165,0,0.15);
+    }
+    .upgrade-card.affordable .buy-btn {
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+      50% { box-shadow: 0 0 0 8px transparent; }
+    }
+
+    .upgrade-icon {
+      font-size: 2rem;
+      width: 48px;
+      text-align: center;
+    }
+    .upgrade-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .upgrade-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+    .upgrade-desc {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .upgrade-level {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+    .buy-btn {
+      background: var(--bg-card-hover);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .buy-btn:hover:not(:disabled) {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+    .buy-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* Prestige section */
+    .prestige-section {
+      width: 100%;
+      max-width: 500px;
+      padding: 24px 16px;
+    }
+    .prestige-card {
+      background: linear-gradient(135deg, rgba(110,64,201,0.15) 0%, rgba(31,111,235,0.1) 100%);
+      border: 1px solid var(--purple);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    .prestige-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .prestige-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+    .prestige-multiplier {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 12px;
+    }
+    .prestige-btn {
+      background: var(--purple);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .prestige-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(110,64,201,0.4);
+    }
+    .prestige-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Events / notifications */
+    .event-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: linear-gradient(135deg, var(--accent) 0%, #e09400 100%);
+      color: #000;
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 32px rgba(240,165,0,0.4);
+      z-index: 1000;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .event-toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Achievements */
+    .achievements-section {
+      width: 100%;
+      max-width: 500px;
+      padding: 24px 16px;
+    }
+    .achievement-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+    }
+    .achievement {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      opacity: 0.3;
+      transition: opacity 0.3s, border-color 0.3s;
+    }
+    .achievement.unlocked {
+      opacity: 1;
+      border-color: var(--accent);
+    }
+    .achievement-icon {
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+    .achievement-name {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    /* Streak & daily */
+    .streak-bar {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+    .streak-badge .fire { color: #f97316; }
+    .streak-badge .star { color: var(--accent); }
+
+    /* Navigation to builder */
+    .nav-link {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: background 0.15s, border-color 0.15s;
+      z-index: 100;
+    }
+    .nav-link:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .stats-bar { gap: 16px; }
+      .stat-value { font-size: 1.2rem; }
+      .tap-zone { width: 150px; height: 150px; }
+      #tap-btn { font-size: 52px; }
+      .upgrade-card { padding: 12px; gap: 10px; }
+      .upgrade-icon { font-size: 1.6rem; width: 40px; }
+    }
+
+    /* Screen shake */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    .shake {
+      animation: shake 0.15s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+
+<header class="game-header">
+  <h1>⚡ KILLFRAME</h1>
+  <p class="tagline">Tap. Upgrade. Dominate.</p>
+</header>
+
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-value" id="coins-display">0</div>
+    <div class="stat-label">🪙 Coins</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="level-display">1</div>
+    <div class="stat-label">⭐ Level</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value" id="prestige-display">0</div>
+    <div class="stat-label">👑 Prestige</div>
+  </div>
+</div>
+
+<div class="streak-bar">
+  <div class="streak-badge">
+    <span class="fire">🔥</span>
+    <span id="streak-count">0</span> day streak
+  </div>
+  <div class="streak-badge">
+    <span class="star">⭐</span>
+    <span id="total-taps">0</span> total taps
+  </div>
+</div>
+
+<main class="game-area">
+  <div class="tap-zone">
+    <button id="tap-btn" aria-label="Tap to earn coins">
+      <span class="icon">⚡</span>
+    </button>
+    <div class="float-container" id="float-container"></div>
+  </div>
+
+  <div class="per-sec">
+    +<span id="cps-display">0</span> coins/sec
+  </div>
+
+  <section class="upgrades-section">
+    <h2 class="section-title">Upgrades</h2>
+    <div class="upgrade-grid" id="upgrade-grid"></div>
+  </section>
+
+  <section class="prestige-section">
+    <div class="prestige-card">
+      <h3>🌟 Prestige Reset</h3>
+      <p>Reset your progress for a permanent multiplier boost</p>
+      <div class="prestige-multiplier">×<span id="next-prestige-mult">2</span></div>
+      <button class="prestige-btn" id="prestige-btn" disabled>
+        Requires 10K coins
+      </button>
+    </div>
+  </section>
+
+  <section class="achievements-section">
+    <h2 class="section-title">Achievements</h2>
+    <div class="achievement-grid" id="achievement-grid"></div>
+  </section>
+</main>
+
+<div class="event-toast" id="event-toast"></div>
+
+<a href="index.html" class="nav-link">🔧 Go to Builder</a>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// KILLFRAME — Game Logic
+// ═══════════════════════════════════════════════════════════════════════════
+
+const STORAGE_KEY = 'killframe_save';
+
+// Game state
+let state = {
+  coins: 0,
+  totalCoins: 0,
+  totalTaps: 0,
+  cps: 0,  // coins per second
+  tapPower: 1,
+  prestigeLevel: 0,
+  prestigeMultiplier: 1,
+  level: 1,
+  xp: 0,
+  upgrades: {},
+  achievements: {},
+  streak: 0,
+  lastLogin: null,
+  luckyEventActive: false,
+};
+
+// Upgrades configuration
+const UPGRADES = [
+  {
+    id: 'tap1',
+    name: 'Power Tap',
+    icon: '👆',
+    desc: '+1 coin per tap',
+    baseCost: 10,
+    costScale: 1.15,
+    effect: 'tap',
+    value: 1,
+  },
+  {
+    id: 'auto1',
+    name: 'Auto Clicker',
+    icon: '🤖',
+    desc: '+1 coin/sec',
+    baseCost: 50,
+    costScale: 1.18,
+    effect: 'cps',
+    value: 1,
+  },
+  {
+    id: 'tap2',
+    name: 'Mega Tap',
+    icon: '💪',
+    desc: '+5 coins per tap',
+    baseCost: 200,
+    costScale: 1.2,
+    effect: 'tap',
+    value: 5,
+  },
+  {
+    id: 'auto2',
+    name: 'Coin Factory',
+    icon: '🏭',
+    desc: '+5 coins/sec',
+    baseCost: 500,
+    costScale: 1.22,
+    effect: 'cps',
+    value: 5,
+  },
+  {
+    id: 'tap3',
+    name: 'Ultra Tap',
+    icon: '⚡',
+    desc: '+25 coins per tap',
+    baseCost: 2000,
+    costScale: 1.25,
+    effect: 'tap',
+    value: 25,
+  },
+  {
+    id: 'auto3',
+    name: 'Coin Empire',
+    icon: '👑',
+    desc: '+25 coins/sec',
+    baseCost: 5000,
+    costScale: 1.28,
+    effect: 'cps',
+    value: 25,
+  },
+];
+
+// Achievements configuration
+const ACHIEVEMENTS = [
+  { id: 'tap100', name: '100 Taps', icon: '👆', condition: () => state.totalTaps >= 100 },
+  { id: 'tap1000', name: '1K Taps', icon: '🙌', condition: () => state.totalTaps >= 1000 },
+  { id: 'tap10000', name: '10K Taps', icon: '🏆', condition: () => state.totalTaps >= 10000 },
+  { id: 'coins1k', name: '1K Coins', icon: '🪙', condition: () => state.totalCoins >= 1000 },
+  { id: 'coins100k', name: '100K Coins', icon: '💰', condition: () => state.totalCoins >= 100000 },
+  { id: 'coins1m', name: '1M Coins', icon: '🤑', condition: () => state.totalCoins >= 1000000 },
+  { id: 'prestige1', name: 'First Prestige', icon: '🌟', condition: () => state.prestigeLevel >= 1 },
+  { id: 'prestige5', name: '5x Prestige', icon: '👑', condition: () => state.prestigeLevel >= 5 },
+  { id: 'level10', name: 'Level 10', icon: '📈', condition: () => state.level >= 10 },
+  { id: 'level50', name: 'Level 50', icon: '🚀', condition: () => state.level >= 50 },
+  { id: 'streak7', name: '7 Day Streak', icon: '🔥', condition: () => state.streak >= 7 },
+  { id: 'streak30', name: '30 Day Streak', icon: '🔥🔥', condition: () => state.streak >= 30 },
+];
+
+// DOM elements
+const coinsDisplay = document.getElementById('coins-display');
+const levelDisplay = document.getElementById('level-display');
+const prestigeDisplay = document.getElementById('prestige-display');
+const cpsDisplay = document.getElementById('cps-display');
+const totalTapsDisplay = document.getElementById('total-taps');
+const streakDisplay = document.getElementById('streak-count');
+const tapBtn = document.getElementById('tap-btn');
+const floatContainer = document.getElementById('float-container');
+const upgradeGrid = document.getElementById('upgrade-grid');
+const achievementGrid = document.getElementById('achievement-grid');
+const prestigeBtn = document.getElementById('prestige-btn');
+const nextPrestigeMult = document.getElementById('next-prestige-mult');
+const eventToast = document.getElementById('event-toast');
+
+// ─── Initialization ───────────────────────────────────────────────────────────
+
+function init() {
+  loadGame();
+  checkDailyStreak();
+  renderUpgrades();
+  renderAchievements();
+  updateDisplay();
+  
+  // Event listeners
+  tapBtn.addEventListener('click', handleTap);
+  tapBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleTap();
+  });
+  prestigeBtn.addEventListener('click', handlePrestige);
+  
+  // Auto-save every 10 seconds
+  setInterval(saveGame, 10000);
+  
+  // CPS tick every second
+  setInterval(tickCPS, 1000);
+  
+  // Random lucky events
+  setInterval(maybeStartLuckyEvent, 60000);
+  
+  // Check achievements periodically
+  setInterval(checkAchievements, 2000);
+}
+
+// ─── Core Game Loop ───────────────────────────────────────────────────────────
+
+function handleTap() {
+  const earned = calculateTapValue();
+  state.coins += earned;
+  state.totalCoins += earned;
+  state.totalTaps++;
+  
+  // XP and leveling
+  state.xp += earned;
+  checkLevelUp();
+  
+  // Visual feedback
+  createFloatLabel(earned);
+  tapBtn.classList.add('pressed');
+  setTimeout(() => tapBtn.classList.remove('pressed'), 100);
+  
+  updateDisplay();
+}
+
+function calculateTapValue() {
+  let base = state.tapPower;
+  base *= state.prestigeMultiplier;
+  if (state.luckyEventActive) base *= 2;
+  return Math.floor(base);
+}
+
+function tickCPS() {
+  if (state.cps > 0) {
+    const earned = Math.floor(state.cps * state.prestigeMultiplier * (state.luckyEventActive ? 2 : 1));
+    state.coins += earned;
+    state.totalCoins += earned;
+    state.xp += earned;
+    checkLevelUp();
+    updateDisplay();
+  }
+}
+
+// ─── Upgrades ─────────────────────────────────────────────────────────────────
+
+function renderUpgrades() {
+  upgradeGrid.innerHTML = UPGRADES.map(upg => {
+    const level = state.upgrades[upg.id] || 0;
+    const cost = Math.floor(upg.baseCost * Math.pow(upg.costScale, level));
+    const affordable = state.coins >= cost;
+    
+    return `
+      <div class="upgrade-card ${affordable ? 'affordable' : ''}" data-id="${upg.id}">
+        <div class="upgrade-icon">${upg.icon}</div>
+        <div class="upgrade-info">
+          <div class="upgrade-name">${upg.name}</div>
+          <div class="upgrade-desc">${upg.desc}</div>
+          <div class="upgrade-level">Level ${level}</div>
+        </div>
+        <button class="buy-btn" data-id="${upg.id}" ${affordable ? '' : 'disabled'}>
+          ${formatNumber(cost)} 🪙
+        </button>
+      </div>
+    `;
+  }).join('');
+  
+  // Attach click handlers
+  upgradeGrid.querySelectorAll('.buy-btn').forEach(btn => {
+    btn.addEventListener('click', () => buyUpgrade(btn.dataset.id));
+  });
+}
+
+function buyUpgrade(id) {
+  const upg = UPGRADES.find(u => u.id === id);
+  if (!upg) return;
+  
+  const level = state.upgrades[upg.id] || 0;
+  const cost = Math.floor(upg.baseCost * Math.pow(upg.costScale, level));
+  
+  if (state.coins < cost) return;
+  
+  state.coins -= cost;
+  state.upgrades[upg.id] = level + 1;
+  
+  // Apply effect
+  if (upg.effect === 'tap') {
+    state.tapPower += upg.value;
+  } else if (upg.effect === 'cps') {
+    state.cps += upg.value;
+  }
+  
+  // Screen shake feedback
+  document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 150);
+  
+  renderUpgrades();
+  updateDisplay();
+  saveGame();
+}
+
+// ─── Prestige ─────────────────────────────────────────────────────────────────
+
+function handlePrestige() {
+  if (state.coins < 10000) return;
+  
+  state.prestigeLevel++;
+  state.prestigeMultiplier = Math.pow(2, state.prestigeLevel);
+  
+  // Reset progress
+  state.coins = 0;
+  state.tapPower = 1;
+  state.cps = 0;
+  state.level = 1;
+  state.xp = 0;
+  state.upgrades = {};
+  
+  showToast(`🌟 Prestige ${state.prestigeLevel}! ×${state.prestigeMultiplier} multiplier!`);
+  
+  renderUpgrades();
+  updateDisplay();
+  saveGame();
+}
+
+// ─── Leveling ─────────────────────────────────────────────────────────────────
+
+function checkLevelUp() {
+  const xpNeeded = state.level * 100;
+  while (state.xp >= xpNeeded) {
+    state.xp -= xpNeeded;
+    state.level++;
+    showToast(`⭐ Level ${state.level}!`);
+  }
+}
+
+// ─── Achievements ─────────────────────────────────────────────────────────────
+
+function renderAchievements() {
+  achievementGrid.innerHTML = ACHIEVEMENTS.map(ach => {
+    const unlocked = state.achievements[ach.id] || false;
+    return `
+      <div class="achievement ${unlocked ? 'unlocked' : ''}" title="${ach.name}">
+        <div class="achievement-icon">${ach.icon}</div>
+        <div class="achievement-name">${ach.name}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function checkAchievements() {
+  let newUnlock = false;
+  ACHIEVEMENTS.forEach(ach => {
+    if (!state.achievements[ach.id] && ach.condition()) {
+      state.achievements[ach.id] = true;
+      showToast(`🏆 Achievement: ${ach.name}!`);
+      newUnlock = true;
+    }
+  });
+  if (newUnlock) {
+    renderAchievements();
+    saveGame();
+  }
+}
+
+// ─── Daily Streak ─────────────────────────────────────────────────────────────
+
+function checkDailyStreak() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  
+  if (state.lastLogin === today) {
+    // Already logged in today
+    return;
+  }
+  
+  if (state.lastLogin === yesterday) {
+    // Consecutive day
+    state.streak++;
+    const bonus = state.streak * 100;
+    state.coins += bonus;
+    state.totalCoins += bonus;
+    showToast(`🔥 ${state.streak} day streak! +${bonus} coins!`);
+  } else if (state.lastLogin !== today) {
+    // Streak broken or first login
+    if (state.lastLogin) {
+      state.streak = 1;
+      showToast('🔥 New streak started! +100 coins!');
+      state.coins += 100;
+      state.totalCoins += 100;
+    } else {
+      state.streak = 1;
+      showToast('🎮 Welcome to KILLFRAME! +100 coins!');
+      state.coins += 100;
+      state.totalCoins += 100;
+    }
+  }
+  
+  state.lastLogin = today;
+  saveGame();
+}
+
+// ─── Lucky Events ─────────────────────────────────────────────────────────────
+
+function maybeStartLuckyEvent() {
+  if (state.luckyEventActive) return;
+  if (Math.random() > 0.3) return; // 30% chance
+  
+  state.luckyEventActive = true;
+  showToast('⚡ GOLDEN TAP! 2× earnings for 30s!');
+  tapBtn.style.borderColor = '#ffd700';
+  tapBtn.querySelector('.icon').textContent = '💰';
+  
+  setTimeout(() => {
+    state.luckyEventActive = false;
+    tapBtn.style.borderColor = '';
+    tapBtn.querySelector('.icon').textContent = '⚡';
+    showToast('⚡ Golden Tap ended');
+  }, 30000);
+}
+
+// ─── Visual Feedback ──────────────────────────────────────────────────────────
+
+function createFloatLabel(value) {
+  const label = document.createElement('div');
+  label.className = 'float-label';
+  label.textContent = `+${formatNumber(value)}`;
+  
+  // Random position around the button
+  const angle = Math.random() * Math.PI * 2;
+  const distance = 30 + Math.random() * 20;
+  const x = 90 + Math.cos(angle) * distance;
+  const y = 90 + Math.sin(angle) * distance;
+  
+  label.style.left = `${x}px`;
+  label.style.top = `${y}px`;
+  
+  floatContainer.appendChild(label);
+  setTimeout(() => label.remove(), 800);
+}
+
+function showToast(message) {
+  eventToast.textContent = message;
+  eventToast.classList.add('visible');
+  setTimeout(() => eventToast.classList.remove('visible'), 3000);
+}
+
+// ─── Display Update ───────────────────────────────────────────────────────────
+
+function updateDisplay() {
+  coinsDisplay.textContent = formatNumber(Math.floor(state.coins));
+  levelDisplay.textContent = state.level;
+  prestigeDisplay.textContent = state.prestigeLevel;
+  cpsDisplay.textContent = formatNumber(Math.floor(state.cps * state.prestigeMultiplier * (state.luckyEventActive ? 2 : 1)));
+  totalTapsDisplay.textContent = formatNumber(state.totalTaps);
+  streakDisplay.textContent = state.streak;
+  
+  // Prestige button
+  nextPrestigeMult.textContent = Math.pow(2, state.prestigeLevel + 1);
+  prestigeBtn.disabled = state.coins < 10000;
+  prestigeBtn.textContent = state.coins >= 10000 
+    ? 'Prestige Now!' 
+    : `Requires ${formatNumber(10000 - state.coins)} more`;
+  
+  // Update upgrade affordability
+  renderUpgrades();
+}
+
+function formatNumber(num) {
+  if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+  if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+  if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+  if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+  return num.toString();
+}
+
+// ─── Save/Load ────────────────────────────────────────────────────────────────
+
+function saveGame() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn('Could not save game:', e);
+  }
+}
+
+function loadGame() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state = { ...state, ...parsed };
+      
+      // Recalculate tapPower and cps from upgrades
+      state.tapPower = 1;
+      state.cps = 0;
+      UPGRADES.forEach(upg => {
+        const level = state.upgrades[upg.id] || 0;
+        if (upg.effect === 'tap') {
+          state.tapPower += upg.value * level;
+        } else if (upg.effect === 'cps') {
+          state.cps += upg.value * level;
+        }
+      });
+      
+      // Calculate offline earnings
+      if (state.lastLogin && state.cps > 0) {
+        const lastTime = new Date(state.lastLogin).getTime();
+        const now = Date.now();
+        const offlineSeconds = Math.min((now - lastTime) / 1000, 3600 * 8); // Max 8 hours
+        if (offlineSeconds > 60) {
+          const offlineEarnings = Math.floor(state.cps * state.prestigeMultiplier * offlineSeconds * 0.5);
+          state.coins += offlineEarnings;
+          state.totalCoins += offlineEarnings;
+          showToast(`💤 You earned ${formatNumber(offlineEarnings)} coins while away!`);
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load game:', e);
+  }
+}
+
+// ─── Start ────────────────────────────────────────────────────────────────────
+
+init();
+</script>
+
+</body>
+</html>

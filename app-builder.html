@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KILLFRAME App Builder — AI-Powered Creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-dark: #0a0a0f;
+      --bg-card: #12121a;
+      --bg-card-hover: #1a1a24;
+      --bg-input: #0d0d12;
+      --accent: #f0a500;
+      --accent-glow: rgba(240, 165, 0, 0.3);
+      --success: #22c55e;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --blue: #1f6feb;
+      --purple: #6e40c9;
+      --teal: #14b8a6;
+      --pink: #ec4899;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Layout */
+    .app-container {
+      display: grid;
+      grid-template-columns: 280px 1fr 360px;
+      min-height: 100vh;
+    }
+
+    @media (max-width: 1200px) {
+      .app-container {
+        grid-template-columns: 1fr 320px;
+      }
+      .sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar, .ai-panel {
+        display: none;
+      }
+      .sidebar.mobile-open, .ai-panel.mobile-open {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        overflow-y: auto;
+        width: 300px;
+      }
+      .sidebar.mobile-open { left: 0; }
+      .ai-panel.mobile-open { right: 0; width: 320px; }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      overflow-y: auto;
+    }
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .sidebar-header .logo {
+      font-size: 1.5rem;
+    }
+
+    .nav-section {
+      margin-bottom: 24px;
+    }
+    .nav-section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 0.9rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-item:hover {
+      background: var(--bg-card-hover);
+    }
+    .nav-item.active {
+      background: rgba(240, 165, 0, 0.1);
+      color: var(--accent);
+    }
+    .nav-item .icon {
+      font-size: 1.1rem;
+    }
+
+    /* Main content */
+    .main-content {
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .main-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .mobile-toggles {
+      display: none;
+    }
+    @media (max-width: 900px) {
+      .mobile-toggles {
+        display: flex;
+        gap: 8px;
+      }
+    }
+    .mobile-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: var(--text);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Mode Tabs */
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .mode-tab {
+      flex: 1;
+      min-width: 160px;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .mode-tab:hover {
+      border-color: rgba(255,255,255,0.15);
+      background: var(--bg-card-hover);
+    }
+    .mode-tab.active {
+      border-color: var(--accent);
+      background: rgba(240, 165, 0, 0.1);
+      color: var(--accent);
+    }
+    .mode-tab .mode-icon {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Mode Info Card */
+    .mode-info {
+      background: linear-gradient(135deg, rgba(240,165,0,0.08) 0%, rgba(31,111,235,0.05) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .mode-info p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    .mode-info .mode-desc {
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .mode-info .mode-question {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* Form section */
+    .form-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .form-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .form-select {
+      cursor: pointer;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #e09400);
+      color: #000;
+    }
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+    .btn-secondary {
+      background: var(--bg-card-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* Examples Section */
+    .examples-section {
+      margin-bottom: 24px;
+    }
+    .examples-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      width: 100%;
+      text-align: left;
+    }
+    .examples-toggle:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+    .examples-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 12px;
+    }
+    .examples-panel.hidden {
+      display: none;
+    }
+    .examples-panel h3 {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .example-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .example-chip {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: var(--text);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .example-chip:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Pipeline Steps */
+    .pipeline-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .pipeline-section.hidden {
+      display: none;
+    }
+    .pipeline-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .pipeline-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pipeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-input);
+      border-radius: 8px;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #000;
+      flex-shrink: 0;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .step-summary {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Validation Box */
+    .validation-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .validation-box.hidden {
+      display: none;
+    }
+    .validation-box.pass {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.05);
+    }
+    .validation-box.fail {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+    .validation-box strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+    .validation-box ul {
+      list-style: none;
+    }
+    .validation-box li {
+      padding: 6px 0;
+      font-size: 0.85rem;
+    }
+    .validation-box .v-pass { color: var(--success); }
+    .validation-box .v-fail { color: var(--danger); }
+
+    /* Output panel */
+    .output-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .output-section.hidden {
+      display: none;
+    }
+    .output-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .output-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .output-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .output-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .output-card-content {
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .output-card-content ul {
+      list-style: none;
+      margin-top: 8px;
+    }
+    .output-card-content li {
+      padding: 4px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+    .output-card-content li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+    .code-block {
+      background: #0d0d12;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* AI Panel */
+    .ai-panel {
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+    .ai-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ai-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* Expert selector */
+    .expert-selector {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .expert-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      color: var(--text);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .expert-btn:hover {
+      background: var(--bg-card-hover);
+    }
+    .expert-btn.active {
+      border-color: var(--accent);
+      background: rgba(240, 165, 0, 0.1);
+      color: var(--accent);
+    }
+    .expert-btn .expert-icon {
+      font-size: 0.9rem;
+    }
+
+    /* Chat area */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .chat-message {
+      margin-bottom: 16px;
+      max-width: 95%;
+    }
+    .chat-message.user {
+      margin-left: auto;
+    }
+    .chat-message.assistant {
+      margin-right: auto;
+    }
+    .chat-bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .user .chat-bubble {
+      background: var(--blue);
+      border-bottom-right-radius: 4px;
+    }
+    .assistant .chat-bubble {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+    .chat-meta {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+    .user .chat-meta {
+      text-align: right;
+    }
+
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .suggestion-chip {
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .suggestion-chip:hover {
+      border-color: var(--accent);
+    }
+
+    /* Chat input */
+    .chat-input-area {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .chat-input-wrapper {
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .chat-send-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border: none;
+      border-radius: 50%;
+      color: #000;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .chat-send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Recommendations panel */
+    .recommendations {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid var(--success);
+      border-radius: 10px;
+    }
+    .recommendations h4 {
+      font-size: 0.8rem;
+      color: var(--success);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .recommendations ul {
+      list-style: none;
+      font-size: 0.8rem;
+    }
+    .recommendations li {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .recommendations li:last-child {
+      border-bottom: none;
+    }
+
+    /* Overlay for mobile */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 99;
+    }
+    .overlay.visible {
+      display: block;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+    }
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      75% { transform: translateX(4px); }
+    }
+    .shake {
+      animation: shake 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="app-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="logo">⚡</span>
+      <h1>KILLFRAME</h1>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-section-title">Create</div>
+      <a href="#" class="nav-item active" onclick="return false;">
+        <span class="icon">🎨</span> App Builder
+      </a>
+      <a href="index.html" class="nav-item">
+        <span class="icon">🔧</span> Classic Builder
+      </a>
+    </nav>
+
+    <nav class="nav-section">
+      <div class="nav-section-title">Play</div>
+      <a href="game.html" class="nav-item">
+        <span class="icon">🎮</span> Play KILLFRAME
+      </a>
+    </nav>
+
+    <nav class="nav-section">
+      <div class="nav-section-title">AI Experts</div>
+      <a href="#" class="nav-item" onclick="selectExpert('general'); return false;">
+        <span class="icon">🤖</span> General Assistant
+      </a>
+      <a href="#" class="nav-item" onclick="selectExpert('travel'); return false;">
+        <span class="icon">✈️</span> Travel Agent
+      </a>
+      <a href="#" class="nav-item" onclick="selectExpert('finance'); return false;">
+        <span class="icon">💰</span> Financial Adviser
+      </a>
+      <a href="#" class="nav-item" onclick="selectExpert('game'); return false;">
+        <span class="icon">🎮</span> Game Designer
+      </a>
+      <a href="#" class="nav-item" onclick="selectExpert('marketing'); return false;">
+        <span class="icon">📈</span> Marketing Expert
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="main-header">
+      <h1 class="main-title">⚡ KILLFRAME App Builder</h1>
+      <div class="mobile-toggles">
+        <button class="mobile-toggle" onclick="toggleSidebar()">☰ Menu</button>
+        <button class="mobile-toggle" onclick="toggleAI()">🤖 AI Help</button>
+      </div>
+    </header>
+
+    <!-- Mode Tabs -->
+    <div class="mode-tabs" role="tablist">
+      <button class="mode-tab active" data-mode="game" role="tab" onclick="selectMode('game')">
+        <span class="mode-icon">🎮</span>
+        Addictive Game
+      </button>
+      <button class="mode-tab" data-mode="app" role="tab" onclick="selectMode('app')">
+        <span class="mode-icon">💰</span>
+        Money-Making App
+      </button>
+      <button class="mode-tab" data-mode="hybrid" role="tab" onclick="selectMode('hybrid')">
+        <span class="mode-icon">🔥</span>
+        Hybrid (Game + Revenue)
+      </button>
+    </div>
+
+    <!-- Mode Info -->
+    <div class="mode-info">
+      <p class="mode-desc" id="mode-desc">Build high-retention games with simple mechanics and strong reward loops. Every decision prioritises fun, repeatability, and engagement time.</p>
+      <p class="mode-question" id="mode-question">💡 Core question: "What does the player do every 10 seconds?"</p>
+    </div>
+
+    <!-- Input Form -->
+    <section class="form-section">
+      <h2 class="form-title">📝 Describe Your Idea</h2>
+
+      <div class="form-group">
+        <label class="form-label" id="concept-label">Game Concept</label>
+        <textarea class="form-textarea" id="concept-input" rows="3" maxlength="500" placeholder="e.g., Tap coins, upgrade miners, idle to riches"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="audience-label">Target Audience</label>
+        <input type="text" class="form-input" id="audience-input" maxlength="120" placeholder="e.g., Casual mobile players, 18-35">
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
+        <button class="btn btn-primary" id="generate-btn" onclick="generate()">🚀 Generate</button>
+        <button class="btn btn-secondary" onclick="askForSuggestions()">💡 Get AI Suggestions</button>
+      </div>
+    </section>
+
+    <!-- Examples Section -->
+    <section class="examples-section">
+      <button class="examples-toggle" id="examples-toggle" onclick="toggleExamples()">📚 Show Examples</button>
+      <div class="examples-panel hidden" id="examples-panel">
+        <h3>Reference Examples — click to load</h3>
+        <div class="example-chips" id="examples-list"></div>
+      </div>
+    </section>
+
+    <!-- Pipeline Steps -->
+    <section class="pipeline-section hidden" id="pipeline-section">
+      <h2 class="pipeline-title">🔧 Pipeline Steps</h2>
+      <div class="pipeline-steps" id="pipeline-steps"></div>
+    </section>
+
+    <!-- Validation Box -->
+    <div class="validation-box hidden" id="validation-box"></div>
+
+    <!-- Output Section -->
+    <section class="output-section hidden" id="output-section">
+      <h2 class="output-title">📄 Structured Output</h2>
+      <div class="output-grid" id="output-grid"></div>
+      <div style="margin-top: 16px; display: flex; gap: 12px;">
+        <button class="btn btn-secondary" onclick="copyOutput()">📋 Copy</button>
+        <button class="btn btn-secondary" onclick="downloadOutput()">💾 Download</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- AI Assistant Panel -->
+  <aside class="ai-panel" id="ai-panel">
+    <div class="ai-header">
+      <h2>🤖 AI Expert Assistants</h2>
+      <div class="expert-selector" id="expert-selector">
+        <button class="expert-btn active" data-expert="general" onclick="selectExpert('general')">
+          <span class="expert-icon">🤖</span> General
+        </button>
+        <button class="expert-btn" data-expert="travel" onclick="selectExpert('travel')">
+          <span class="expert-icon">✈️</span> Travel
+        </button>
+        <button class="expert-btn" data-expert="finance" onclick="selectExpert('finance')">
+          <span class="expert-icon">💰</span> Finance
+        </button>
+        <button class="expert-btn" data-expert="fitness" onclick="selectExpert('fitness')">
+          <span class="expert-icon">💪</span> Fitness
+        </button>
+        <button class="expert-btn" data-expert="game" onclick="selectExpert('game')">
+          <span class="expert-icon">🎮</span> Game
+        </button>
+        <button class="expert-btn" data-expert="marketing" onclick="selectExpert('marketing')">
+          <span class="expert-icon">📈</span> Marketing
+        </button>
+      </div>
+    </div>
+
+    <div class="chat-area" id="chat-area">
+      <div class="chat-message assistant fade-in">
+        <div class="chat-bubble">
+          👋 Hi! I'm your AI assistant. Choose an expert above or ask me anything about building your app.
+          <br><br>
+          I can help with:
+          <br>• App design & features
+          <br>• Monetization strategies
+          <br>• User engagement tactics
+          <br>• Technical recommendations
+        </div>
+        <div class="chat-meta">AI Assistant</div>
+      </div>
+
+      <div class="suggestion-chips" id="suggestion-chips">
+        <button class="suggestion-chip" onclick="askExpert('How can I make my app more addictive?')">Make it addictive</button>
+        <button class="suggestion-chip" onclick="askExpert('What monetization model should I use?')">Monetization tips</button>
+        <button class="suggestion-chip" onclick="askExpert('How do I retain users?')">Retention strategies</button>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="chat-input-wrapper">
+        <input type="text" class="chat-input" id="chat-input" placeholder="Ask the AI expert..." onkeydown="handleChatKeydown(event)">
+        <button class="chat-send-btn" onclick="sendMessage()">→</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// KILLFRAME App Builder — Complete Logic
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let currentMode = 'game';
+let currentExpert = 'general';
+let chatHistory = [];
+let generatedOutput = null;
+
+// ─── Mode Definitions ─────────────────────────────────────────────────────────
+const MODES = {
+  game: {
+    id: 'game',
+    label: '🎮 Addictive Game',
+    description: 'Build high-retention games with simple mechanics and strong reward loops. Every decision prioritises fun, repeatability, and engagement time.',
+    coreQuestion: 'What does the player do every 10 seconds?',
+    conceptLabel: 'Game Concept',
+    conceptPlaceholder: 'e.g., Tap coins, upgrade miners, idle to riches',
+    audienceLabel: 'Target Player',
+    audiencePlaceholder: 'e.g., Casual mobile players, 18-35',
+    sections: ['concept', 'coreLoop', 'progressionSystem', 'rewardSystem', 'feedbackSystem', 'challengeSystem', 'code', 'addictiveUpgrades']
+  },
+  app: {
+    id: 'app',
+    label: '💰 Money-Making App',
+    description: 'Build apps that solve a real problem, keep users coming back daily, and generate sustainable income through clear monetization models.',
+    coreQuestion: 'Would someone pay for this? Why would users return daily?',
+    conceptLabel: 'App Idea',
+    conceptPlaceholder: 'e.g., Daily habit tracker with streaks and analytics',
+    audienceLabel: 'Target User',
+    audiencePlaceholder: 'e.g., Productivity-focused adults, 25-40',
+    sections: ['problem', 'targetUser', 'monetizationPlan', 'retentionSystems', 'mvpFeatures', 'code', 'growthIdeas']
+  },
+  hybrid: {
+    id: 'hybrid',
+    label: '🔥 Hybrid (Game + Revenue)',
+    description: 'Combine addictive game mechanics with a solid monetization layer. Start with a hook that players cannot put down, then build revenue paths on top.',
+    coreQuestion: 'What is the addictive loop AND how does it make money?',
+    conceptLabel: 'Concept',
+    conceptPlaceholder: 'e.g., Puzzle game with cosmetic shop and daily challenges',
+    audienceLabel: 'Target Audience',
+    audiencePlaceholder: 'e.g., Mobile gamers willing to spend on cosmetics',
+    sections: ['concept', 'coreLoop', 'progressionSystem', 'rewardSystem', 'monetizationPlan', 'premiumExpansions', 'code', 'scalingRoadmap']
+  }
+};
+
+// ─── Section Labels ───────────────────────────────────────────────────────────
+const SECTION_LABELS = {
+  concept: '🎯 Concept',
+  problem: '🔍 Problem',
+  coreLoop: '🔄 Core Loop (every ~10 seconds)',
+  progressionSystem: '📈 Progression System',
+  rewardSystem: '🎁 Reward System',
+  feedbackSystem: '💥 Feedback System',
+  challengeSystem: '⚔️ Challenge System',
+  targetUser: '👤 Target User',
+  monetizationPlan: '💸 Monetization Plan',
+  retentionSystems: '🔒 Retention Systems',
+  mvpFeatures: '📋 MVP Features',
+  premiumExpansions: '⭐ Premium Expansions',
+  addictiveUpgrades: '🔥 Addictive Upgrades',
+  growthIdeas: '🚀 Growth Ideas',
+  scalingRoadmap: '🗺️ Scaling Roadmap',
+  code: '💻 Playable Code'
+};
+
+// ─── Examples ─────────────────────────────────────────────────────────────────
+const EXAMPLES = {
+  game: [
+    { label: '🪙 Coin Tapper', prompt: 'A simple idle clicker where you tap to earn coins, unlock upgrades, and watch numbers go up.' },
+    { label: '🏰 Castle Builder', prompt: 'Build and upgrade a castle by tapping, collecting resources, and defending against waves.' },
+    { label: '🚀 Space Miner', prompt: 'Mine asteroids, upgrade your ship, and explore the galaxy while earning passive income.' }
+  ],
+  app: [
+    { label: '📅 Habit Tracker', prompt: 'A habit tracker that rewards streaks, shows beautiful progress charts, and sells a premium tier for advanced analytics.' },
+    { label: '💰 Budget Buddy', prompt: 'An expense tracker with automatic categorization, budget alerts, and financial insights.' },
+    { label: '📚 Reading List', prompt: 'Track books you want to read, set reading goals, and earn badges for completing challenges.' }
+  ],
+  hybrid: [
+    { label: '💬 Word Blitz', prompt: 'A fast word-finding puzzle game with a cosmetic shop, daily challenges, and an optional ad-remove purchase.' },
+    { label: '🧩 Puzzle Quest', prompt: 'Match-3 puzzle game with story mode, energy system, and seasonal battle pass.' },
+    { label: '🏃 Fitness Runner', prompt: 'Endless runner that tracks real steps, rewards daily activity, and sells premium character skins.' }
+  ]
+};
+
+// ─── Expert AI Definitions ────────────────────────────────────────────────────
+const EXPERTS = {
+  general: { name: 'General Assistant', icon: '🤖', greeting: 'I can help with any aspect of app development!' },
+  travel: { name: 'Travel Expert', icon: '✈️', greeting: 'I specialize in travel apps, itineraries, and booking flows.' },
+  finance: { name: 'Financial Adviser', icon: '💰', greeting: 'I help with budgeting, fintech, and financial app compliance.' },
+  fitness: { name: 'Fitness Coach', icon: '💪', greeting: 'I\'ll help you build engaging fitness apps with effective programs.' },
+  game: { name: 'Game Designer', icon: '🎮', greeting: 'Let\'s create addictive mechanics! I know all about loops and player psychology.' },
+  marketing: { name: 'Marketing Strategist', icon: '📈', greeting: 'I\'ll help with ASO, user acquisition, viral mechanics, and retention.' }
+};
+
+// ─── Mode Selection ───────────────────────────────────────────────────────────
+function selectMode(modeId) {
+  currentMode = modeId;
+  const mode = MODES[modeId];
+  
+  // Update tabs
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.mode === modeId);
+  });
+  
+  // Update info card
+  document.getElementById('mode-desc').textContent = mode.description;
+  document.getElementById('mode-question').textContent = `💡 Core question: "${mode.coreQuestion}"`;
+  
+  // Update form labels
+  document.getElementById('concept-label').textContent = mode.conceptLabel;
+  document.getElementById('concept-input').placeholder = mode.conceptPlaceholder;
+  document.getElementById('audience-label').textContent = mode.audienceLabel;
+  document.getElementById('audience-input').placeholder = mode.audiencePlaceholder;
+  
+  // Update examples
+  renderExamples();
+  
+  // Clear output
+  clearOutput();
+}
+
+// ─── Examples ─────────────────────────────────────────────────────────────────
+function renderExamples() {
+  const examples = EXAMPLES[currentMode] || [];
+  const container = document.getElementById('examples-list');
+  container.innerHTML = examples.map((ex, i) => 
+    `<button class="example-chip" onclick="loadExample(${i})">${ex.label}</button>`
+  ).join('');
+}
+
+function loadExample(index) {
+  const example = EXAMPLES[currentMode][index];
+  if (!example) return;
+  
+  document.getElementById('concept-input').value = example.prompt;
+  document.getElementById('audience-input').value = '';
+  
+  // Auto-generate
+  generate();
+}
+
+function toggleExamples() {
+  const panel = document.getElementById('examples-panel');
+  const toggle = document.getElementById('examples-toggle');
+  panel.classList.toggle('hidden');
+  toggle.textContent = panel.classList.contains('hidden') ? '📚 Show Examples' : '📚 Hide Examples';
+}
+
+// ─── Generation ───────────────────────────────────────────────────────────────
+function generate() {
+  const concept = document.getElementById('concept-input').value.trim();
+  const audience = document.getElementById('audience-input').value.trim();
+  
+  if (!concept) {
+    document.getElementById('concept-input').classList.add('shake');
+    setTimeout(() => document.getElementById('concept-input').classList.remove('shake'), 300);
+    document.getElementById('concept-input').focus();
+    return;
+  }
+  
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+  
+  setTimeout(() => {
+    try {
+      const result = runPipeline(currentMode, { concept, audience });
+      generatedOutput = result;
+      renderOutput(result);
+      
+      // Notify AI
+      addAIMessage(`✅ Generated **${MODES[currentMode].label}** blueprint!\n\nI've analyzed your concept and created a complete structure. Feel free to ask me for suggestions to improve any section!`, currentExpert);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🚀 Generate';
+    }
+  }, 100);
+}
+
+function runPipeline(modeId, inputs) {
+  const mode = MODES[modeId];
+  const steps = [];
+  let output;
+  
+  if (modeId === 'hybrid') {
+    // Three-step pipeline for hybrid
+    const s1 = generateGameOutput(inputs);
+    steps.push({ label: 'Step 1 — Core Loop', summary: s1.coreLoop.substring(0, 100) + '…' });
+    
+    const s2 = generateAppOutput(inputs);
+    steps.push({ label: 'Step 2 — Monetization Layer', summary: s2.monetizationPlan.substring(0, 100) + '…' });
+    
+    output = generateHybridOutput(inputs);
+    steps.push({ label: 'Step 3 — Premium Expansions', summary: output.premiumExpansions.substring(0, 100) + '…' });
+  } else if (modeId === 'game') {
+    output = generateGameOutput(inputs);
+    steps.push({ label: 'Generation complete', summary: output.concept.substring(0, 100) + '…' });
+  } else {
+    output = generateAppOutput(inputs);
+    steps.push({ label: 'Generation complete', summary: output.problem.substring(0, 100) + '…' });
+  }
+  
+  const validation = validateOutput(output, modeId);
+  
+  return { output, validation, steps };
+}
+
+// ─── Output Generators ────────────────────────────────────────────────────────
+function generateGameOutput({ concept, audience }) {
+  const name = titleCase(concept.split(' ').slice(0, 3).join(' '));
+  return {
+    concept: `${name} — ${concept}. Designed for ${audience || 'casual players'}. Core philosophy: the player should never need to think more than 1 second before their next action.`,
+    coreLoop: `Every ~10 seconds the player: (1) performs the core action (tap / swipe / time a reaction), (2) receives immediate coin/XP feedback, (3) watches an upgrade become affordable, (4) buys the upgrade for a satisfying animation, (5) loop restarts faster. Idle income ensures the loop continues even when the screen is closed.`,
+    progressionSystem: `10 upgrade tiers with exponential cost scaling (×1.15 per level). Each tier unlocks a new visual theme and a passive income multiplier. A prestige layer resets the game in exchange for a permanent ×2 global multiplier. Players can prestige up to 10 times.`,
+    rewardSystem: `• Daily login bonus (escalating 7-day streak: day 7 = 10× reward)\n• Milestone chests at key score breakpoints\n• Random "Lucky Event" every 5–10 minutes (double income for 30s)\n• Achievement badges displayed on player profile card`,
+    feedbackSystem: `• Floating score labels on every action with combo size scaling\n• Screen shake + particle burst on upgrade purchase\n• Distinct SFX for tap, upgrade, milestone, and lucky event\n• Upgrade button pulses when affordable`,
+    challengeSystem: `Costs scale exponentially to create just-out-of-reach tension. Weekly leaderboard ranks players by total earnings. Timed "blitz" events (2-hour windows) with 3× rewards to create urgency. Prestige resets recreate early dopamine spikes.`,
+    code: generateGameCode(name),
+    addictiveUpgrades: `1. **Prestige system** — reset all progress for a permanent ×2 multiplier\n2. **Offline earnings** — show "You earned X while away!" on open\n3. **Lucky Events** — random pop-up: "Golden Tap active for 15s!"\n4. **Cosmetic skins** — unlock alternate button/background themes\n5. **Social leaderboard** — "You are ranked #34 globally!"`
+  };
+}
+
+function generateAppOutput({ concept, audience }) {
+  const name = titleCase(concept.split(' ').slice(0, 4).join(' '));
+  return {
+    problem: `${concept}. The core pain: users currently solve this with a combination of spreadsheets, notes apps, and willpower — all of which lack accountability, delight, and data. There is a clear gap for a focused, beautifully designed tool.`,
+    targetUser: `Primary: ${audience || 'adults aged 25–40'} who are aware of the problem and actively looking for a solution. They are comfortable paying for apps that save time or build positive habits. Secondary: power users who want to track and export data.`,
+    monetizationPlan: `**Freemium model:**\n• Free tier: core feature with a 3-item/7-day history cap\n• Pro ($4.99/month or $39.99/year): unlimited items, full history, analytics dashboard, CSV export, custom reminders\n• Lifetime licence: $79.99\n\n**Secondary revenue:**\n• Referral programme: give 1 free month, get 1 free month\n• Sponsored "challenge packs" from wellness/productivity brands`,
+    retentionSystems: `• **Daily push notification** at user-set time\n• **Streak counter** with animated milestone rewards (7, 30, 100 days)\n• **Weekly digest email**: progress recap + one personalised tip\n• **Re-engagement notification** if app not opened in 48h: "Your streak is at risk!"\n• **Monthly Habit Report** shareable graphic`,
+    mvpFeatures: `1. Add / edit / delete items (capped at 3 on free tier)\n2. One-tap daily check-in\n3. Streak counter with milestone animations\n4. Simple calendar heatmap\n5. Push notification reminder\n6. Paywall modal for Pro upgrade`,
+    code: generateAppCode(name),
+    growthIdeas: `1. **Viral sharing** — "Share my streak" card auto-generated as an image\n2. **Friend accountability** — invite a friend; both get 2 weeks free Pro\n3. **App Store Optimisation** — target long-tail keywords\n4. **Content marketing** — "21-day challenge" landing page\n5. **AI coaching layer (v2)** — analyse patterns and suggest adjustments`
+  };
+}
+
+function generateHybridOutput({ concept, audience }) {
+  const name = titleCase(concept.split(' ').slice(0, 3).join(' '));
+  return {
+    concept: `${name} — ${concept}. Target audience: ${audience || 'mobile users aged 18–35'}. This is a game-first product with a monetization layer bolted on seamlessly, so players feel rewarded, not exploited.`,
+    coreLoop: `Every 10–15 seconds: perform core action → earn coins/XP → watch progress bar fill → unlock something small → motivated to repeat. The session hook: each game/round ends with a "Just one more?" moment.`,
+    progressionSystem: `XP-based level system (1–100). Level-up rewards: coins, cosmetic unlocks, and power-up slots. Season track (30 days, free + premium tiers). End-of-season recap screen shows highlights to drive nostalgia and next-season retention.`,
+    rewardSystem: `• Coins per session based on performance\n• Daily challenge: 3× coin bonus\n• 7-day login streak → rare cosmetic\n• Achievement system with visible badges\n• Surprise "gift chest" after every 5th session`,
+    monetizationPlan: `**Free base game**, revenue from:\n• **Remove Ads** — $2.99 one-time\n• **Coin packs** — $0.99 (500) to $9.99 (6,000)\n• **Season Pass** — $4.99/month: 2× XP, exclusive cosmetics, early challenge access\n• **Rewarded ads** — optional; watch to earn 50 coins\n\nTarget ARPU: $1.20/month free; $5.80/month converted`,
+    premiumExpansions: `1. **Cosmetics store** — animated backgrounds, character skins, sound packs\n2. **Power-ups** — purchasable with coins; limited free supply per day\n3. **Battle Pass** — limited-time themed track with exclusive rewards\n4. **Guild / Club system** — join groups, compete in weekly tournaments\n5. **Creator mode** — high-level players design challenge rooms`,
+    code: generateHybridCode(name),
+    scalingRoadmap: `**Month 1:** Ship MVP with core loop + cosmetics shop + remove-ads IAP. Hit 1K downloads.\n**Month 2:** Launch Season Pass. Add daily challenge + push notifications. Target 5K MAU.\n**Month 3:** Guild system + weekly leaderboard. Social sharing card. 15K MAU.\n**Month 6:** Expand with new game modes / maps. Localise to 5 languages. 50K MAU.\n**Year 1:** Target $8K–20K MRR via Season Pass + IAP.`
+  };
+}
+
+function generateGameCode(name) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${name}</title>
+  <style>
+    body{background:#1a1a2e;color:#eee;font-family:sans-serif;text-align:center;padding:40px}
+    #btn{font-size:72px;cursor:pointer;user-select:none;transition:transform .1s}
+    #btn:active{transform:scale(.88)}
+    #score{font-size:2rem;margin:16px 0}
+    .upg{padding:10px 22px;margin:6px;background:#f0a500;border:none;border-radius:8px;cursor:pointer}
+    .upg:disabled{opacity:.35;cursor:default}
+    #cps{color:#aaa;font-size:.9rem}
+  </style>
+</head>
+<body>
+  <h2>${name}</h2>
+  <div id="score">0</div>
+  <div id="btn">🎮</div>
+  <div id="cps">+0 / sec</div>
+  <br>
+  <button class="upg" id="u1">Upgrade I — 10</button>
+  <button class="upg" id="u2">Upgrade II — 100</button>
+  <script>
+    let s=0,cps=0,costs=[10,100],mult=[1,5];
+    document.getElementById('btn').onclick=()=>{s+=1+mult[0];render()};
+    ['u1','u2'].forEach((id,i)=>{
+      document.getElementById(id).onclick=()=>{
+        if(s<costs[i])return;
+        s-=costs[i];cps+=mult[i];costs[i]=Math.ceil(costs[i]*1.5);
+        document.getElementById(id).textContent='Upgrade '+(i+1)+' — '+costs[i];
+        render();
+      };
+    });
+    setInterval(()=>{s+=cps;render();},1000);
+    function render(){
+      document.getElementById('score').textContent=Math.floor(s);
+      document.getElementById('cps').textContent='+'+cps+' / sec';
+      ['u1','u2'].forEach((id,i)=>{document.getElementById(id).disabled=s<costs[i];});
+    }
+  </script>
+</body>
+</html>`;
+}
+
+function generateAppCode(name) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>${name}</title>
+  <style>
+    *{box-sizing:border-box}
+    body{background:#0d1117;color:#e6edf3;font-family:sans-serif;max-width:480px;margin:40px auto;padding:0 16px}
+    h1{color:#58a6ff}
+    .item{display:flex;align-items:center;justify-content:space-between;background:#161b22;border-radius:8px;padding:12px 16px;margin:8px 0}
+    .streak{color:#f0a500;font-size:.88rem}
+    .chk{background:#238636;border:none;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer}
+    .chk.done{background:#2d333b;color:#8b949e}
+    form{display:flex;gap:8px;margin-top:16px}
+    input{flex:1;padding:10px;border-radius:6px;border:1px solid #30363d;background:#161b22;color:#e6edf3}
+    button.add{padding:10px 18px;background:#1f6feb;border:none;color:#fff;border-radius:6px;cursor:pointer}
+    .pro{background:#161b22;border:1px solid #f0a500;border-radius:8px;padding:12px;margin-top:24px;text-align:center;color:#f0a500}
+  </style>
+</head>
+<body>
+  <h1>✅ ${name}</h1>
+  <div id="list"></div>
+  <form id="f" onsubmit="return add(event)">
+    <input id="inp" placeholder="Add item…" maxlength="40"/>
+    <button class="add" type="submit">+ Add</button>
+  </form>
+  <div class="pro">⭐ Pro — Unlimited + analytics — $4.99/mo</div>
+  <script>
+    const MAX=3,KEY='kf_items';
+    let items=JSON.parse(localStorage.getItem(KEY)||'[]');
+    const today=()=>new Date().toDateString();
+    function add(e){
+      e.preventDefault();
+      const v=document.getElementById('inp').value.trim();
+      if(!v)return false;
+      if(items.length>=MAX){alert('Free tier: max 3 items. Upgrade to Pro!');return false;}
+      items.push({id:Date.now(),name:v,streak:0,last:null});
+      save();render();document.getElementById('inp').value='';return false;
+    }
+    function checkIn(id){
+      const h=items.find(x=>x.id===id);if(!h||h.last===today())return;
+      const yes=new Date(Date.now()-86400000).toDateString();
+      h.streak=h.last===yes?h.streak+1:1;h.last=today();save();render();
+    }
+    function render(){
+      document.getElementById('list').innerHTML=items.map(h=>\`
+        <div class="item">
+          <span>\${h.name}</span>
+          <span class="streak">🔥\${h.streak}d</span>
+          <button class="chk \${h.last===today()?'done':''}"
+            onclick="checkIn(\${h.id})" \${h.last===today()?'disabled':''}>
+            \${h.last===today()?'✓':'Check'}
+          </button>
+        </div>\`).join('');
+    }
+    function save(){localStorage.setItem(KEY,JSON.stringify(items));}
+    render();
+  </script>
+</body>
+</html>`;
+}
+
+function generateHybridCode(name) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>${name}</title>
+  <style>
+    body{background:#0d1117;color:#e6edf3;font-family:sans-serif;text-align:center;padding:32px}
+    h1{color:#58a6ff;margin-bottom:4px}
+    .meta{color:#8b949e;font-size:.85rem;margin-bottom:16px}
+    #score-box{font-size:2.2rem;font-weight:bold;margin:12px 0}
+    #coins-box{color:#f0a500;font-size:1rem;margin-bottom:12px}
+    #action-btn{font-size:64px;cursor:pointer;user-select:none;transition:transform .12s}
+    #action-btn:active{transform:scale(.86)}
+    .upg{padding:9px 20px;margin:5px;background:#1f6feb;border:none;color:#fff;border-radius:8px;cursor:pointer}
+    .upg:disabled{opacity:.35;cursor:default}
+    #shop-btn{padding:9px 20px;margin-top:16px;background:#6e40c9;border:none;color:#fff;border-radius:8px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <h1>${name}</h1>
+  <div class="meta">Tap → Score → Upgrade → Repeat</div>
+  <div id="score-box">Score: 0</div>
+  <div id="coins-box">🪙 Coins: 0</div>
+  <div id="action-btn">🎮</div>
+  <br>
+  <button class="upg" id="u1">Boost I — 10 coins</button>
+  <button class="upg" id="u2">Boost II — 80 coins</button>
+  <br>
+  <button id="shop-btn">🛍 Cosmetics Shop</button>
+  <script>
+    let score=0,coins=0,mult=1,cps=0,costs=[10,80],boosts=[1,3];
+    document.getElementById('action-btn').addEventListener('click',()=>{
+      score+=mult;coins+=1;render();
+    });
+    ['u1','u2'].forEach((id,i)=>{
+      document.getElementById(id).addEventListener('click',()=>{
+        if(coins<costs[i])return;
+        coins-=costs[i];mult+=boosts[i];cps+=boosts[i];costs[i]=Math.ceil(costs[i]*1.6);
+        document.getElementById(id).textContent='Boost '+(i+1)+' — '+costs[i]+' coins';
+        render();
+      });
+    });
+    setInterval(()=>{score+=cps;coins+=Math.floor(cps/2);render();},1000);
+    document.getElementById('shop-btn').addEventListener('click',()=>{
+      alert('🛍 Cosmetics Shop\\n\\n🎮 Default (free)\\n🚀 Rocket (30🪙)\\n💎 Diamond (80🪙)\\n🔥 Blaze (150🪙)');
+    });
+    function render(){
+      document.getElementById('score-box').textContent='Score: '+Math.floor(score);
+      document.getElementById('coins-box').textContent='🪙 Coins: '+Math.floor(coins);
+      ['u1','u2'].forEach((id,i)=>{document.getElementById(id).disabled=coins<costs[i];});
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// ─── Validation ───────────────────────────────────────────────────────────────
+function validateOutput(output, modeId) {
+  const rules = [
+    { label: 'Has Core Loop', test: () => output.coreLoop?.length > 50 || output.problem?.length > 50 },
+    { label: 'Has Retention Mechanic', test: () => {
+      const text = JSON.stringify(output).toLowerCase();
+      return text.includes('streak') || text.includes('daily') || text.includes('notification') || text.includes('progression');
+    }},
+    { label: 'Has Monetization Path', test: () => {
+      if (modeId === 'game') return true;
+      return output.monetizationPlan?.length > 50;
+    }},
+    { label: 'Has Code Prototype', test: () => output.code?.length > 100 }
+  ];
+  
+  const results = rules.map(r => ({
+    label: r.label,
+    passed: r.test(),
+    description: r.test() ? 'Passed' : 'Missing or incomplete'
+  }));
+  
+  return {
+    passed: results.every(r => r.passed),
+    results
+  };
+}
+
+// ─── Render Output ────────────────────────────────────────────────────────────
+function renderOutput({ output, validation, steps }) {
+  const mode = MODES[currentMode];
+  
+  // Show pipeline
+  const pipelineSection = document.getElementById('pipeline-section');
+  const pipelineSteps = document.getElementById('pipeline-steps');
+  pipelineSection.classList.remove('hidden');
+  pipelineSteps.innerHTML = steps.map((s, i) => `
+    <div class="pipeline-step fade-in">
+      <div class="step-number">${i + 1}</div>
+      <div class="step-content">
+        <div class="step-label">${s.label}</div>
+        <div class="step-summary">${escapeHtml(s.summary)}</div>
+      </div>
+    </div>
+  `).join('');
+  
+  // Show validation
+  const validationBox = document.getElementById('validation-box');
+  validationBox.classList.remove('hidden');
+  validationBox.className = `validation-box ${validation.passed ? 'pass' : 'fail'}`;
+  validationBox.innerHTML = `
+    <strong>${validation.passed ? '✅ Validation Passed' : '⚠️ Validation Issues'}</strong>
+    <ul>
+      ${validation.results.map(r => `
+        <li class="${r.passed ? 'v-pass' : 'v-fail'}">
+          ${r.passed ? '✅' : '❌'} <strong>${r.label}</strong> — ${r.description}
+        </li>
+      `).join('')}
+    </ul>
+  `;
+  
+  // Show output sections
+  const outputSection = document.getElementById('output-section');
+  const outputGrid = document.getElementById('output-grid');
+  outputSection.classList.remove('hidden');
+  
+  outputGrid.innerHTML = mode.sections.map(key => {
+    const label = SECTION_LABELS[key] || key;
+    const value = output[key] || '';
+    const isCode = key === 'code';
+    
+    return `
+      <div class="output-card fade-in">
+        <h3>${label}</h3>
+        <div class="output-card-content">
+          ${isCode 
+            ? `<pre class="code-block"><code>${escapeHtml(value)}</code></pre>`
+            : formatMarkdownLite(escapeHtml(value))
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  // Scroll to output
+  pipelineSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearOutput() {
+  document.getElementById('pipeline-section').classList.add('hidden');
+  document.getElementById('validation-box').classList.add('hidden');
+  document.getElementById('output-section').classList.add('hidden');
+  generatedOutput = null;
+}
+
+// ─── AI Chat ──────────────────────────────────────────────────────────────────
+function selectExpert(expertId) {
+  currentExpert = expertId;
+  
+  document.querySelectorAll('.expert-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.expert === expertId);
+  });
+  
+  const expert = EXPERTS[expertId];
+  addAIMessage(`${expert.icon} **${expert.name}** here!\n\n${expert.greeting}`, expertId);
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  if (!message) return;
+  
+  addUserMessage(message);
+  input.value = '';
+  
+  showTypingIndicator();
+  
+  setTimeout(() => {
+    hideTypingIndicator();
+    const response = generateAIResponse(message);
+    addAIMessage(response.response, currentExpert);
+    
+    if (response.recommendations?.length > 0) {
+      addRecommendations(response.recommendations);
+    }
+  }, 800 + Math.random() * 800);
+}
+
+function askExpert(question) {
+  document.getElementById('chat-input').value = question;
+  sendMessage();
+}
+
+function askForSuggestions() {
+  const mode = MODES[currentMode];
+  askExpert(`What features should I add to my ${mode.label.replace(/[🎮💰🔥]/g, '').trim()}?`);
+}
+
+function handleChatKeydown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+}
+
+function addUserMessage(text) {
+  const chatArea = document.getElementById('chat-area');
+  removeSuggestionChips();
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'chat-message user fade-in';
+  messageDiv.innerHTML = `
+    <div class="chat-bubble">${escapeHtml(text)}</div>
+    <div class="chat-meta">You</div>
+  `;
+  chatArea.appendChild(messageDiv);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addAIMessage(text, expertId) {
+  const chatArea = document.getElementById('chat-area');
+  const expert = EXPERTS[expertId] || EXPERTS.general;
+  removeSuggestionChips();
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'chat-message assistant fade-in';
+  messageDiv.innerHTML = `
+    <div class="chat-bubble">${formatMarkdownLite(escapeHtml(text))}</div>
+    <div class="chat-meta">${expert.icon} ${expert.name}</div>
+  `;
+  chatArea.appendChild(messageDiv);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addRecommendations(recommendations) {
+  const chatArea = document.getElementById('chat-area');
+  const recDiv = document.createElement('div');
+  recDiv.className = 'recommendations fade-in';
+  recDiv.innerHTML = `
+    <h4>💡 Recommendations</h4>
+    <ul>${recommendations.map(r => `<li>• ${escapeHtml(r)}</li>`).join('')}</ul>
+  `;
+  chatArea.appendChild(recDiv);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function removeSuggestionChips() {
+  const chips = document.getElementById('suggestion-chips');
+  if (chips) chips.remove();
+}
+
+function showTypingIndicator() {
+  const chatArea = document.getElementById('chat-area');
+  const indicator = document.createElement('div');
+  indicator.id = 'typing-indicator';
+  indicator.className = 'chat-message assistant';
+  indicator.innerHTML = `<div class="chat-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+  chatArea.appendChild(indicator);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function hideTypingIndicator() {
+  const indicator = document.getElementById('typing-indicator');
+  if (indicator) indicator.remove();
+}
+
+function generateAIResponse(message) {
+  const lowerMessage = message.toLowerCase();
+  
+  if (lowerMessage.includes('addictive') || lowerMessage.includes('engaging') || lowerMessage.includes('hook')) {
+    return {
+      response: `Here are proven techniques to make your app more addictive:\n\n**1. Variable Rewards** 🎰\nRandomize chest contents, bonus amounts, or unlocks.\n\n**2. Progress Bars Everywhere** 📊\nUsers hate leaving bars incomplete.\n\n**3. Loss Aversion** ⚠️\nStreaks and "use it or lose it" rewards create FOMO.\n\n**4. Social Proof** 👥\nShow leaderboards and friend activity.\n\n**5. Endowed Progress** 🏁\nStart users at 20% complete instead of 0%.`,
+      recommendations: ['Add a streak system', 'Implement random reward boxes', 'Add progress bars to every feature']
+    };
+  }
+  
+  if (lowerMessage.includes('monetiz') || lowerMessage.includes('money') || lowerMessage.includes('revenue')) {
+    return {
+      response: `Here's my monetization recommendation:\n\n**Freemium** (Best for most apps)\n• Free tier: Core features with limits\n• Pro tier: $4.99-9.99/month\n\n**Subscription** (Content apps)\n• Monthly: $4.99-14.99\n• Annual: 40-50% discount\n\n**In-App Purchases** (Games)\n• Consumables: $0.99-4.99\n• Cosmetics: $1.99-9.99\n• Remove ads: $2.99 one-time`,
+      recommendations: ['Start with freemium', 'A/B test pricing', 'Show value before paywall']
+    };
+  }
+  
+  if (lowerMessage.includes('retain') || lowerMessage.includes('come back') || lowerMessage.includes('churn')) {
+    return {
+      response: `User retention strategies:\n\n**Day 1 Retention** (Target: 40%+)\n• Great onboarding - show value in 30 seconds\n• Welcome notification at optimal time\n\n**Day 7 Retention** (Target: 20%+)\n• Daily streaks with escalating rewards\n• Weekly challenges or content refreshes\n\n**Day 30 Retention** (Target: 10%+)\n• Social features\n• Long-term progression\n• Personalized recommendations`,
+      recommendations: ['Implement 7-day streak bonus', 'Add "share progress" feature', 'Send re-engagement emails']
+    };
+  }
+  
+  if (lowerMessage.includes('feature') || lowerMessage.includes('add')) {
+    const mode = MODES[currentMode];
+    const features = {
+      game: ['Prestige/rebirth system', 'Offline earnings', 'Daily challenges', 'Cosmetic skins', 'Social leaderboard'],
+      app: ['Streak tracking', 'Push notifications', 'Progress analytics', 'Export to CSV', 'Social sharing'],
+      hybrid: ['Season pass', 'Cosmetics shop', 'Daily challenges', 'Guild system', 'Rewarded ads']
+    };
+    return {
+      response: `For your **${mode.label}**, I recommend these features:\n\n${features[currentMode].map((f, i) => `${i + 1}. **${f}**`).join('\n')}`,
+      recommendations: features[currentMode].slice(0, 3)
+    };
+  }
+  
+  return {
+    response: `Great question! Based on your ${MODES[currentMode].label}, here are key considerations:\n\n1. **User Problem**: What specific pain point does this solve?\n2. **Core Loop**: What's the one action users repeat most?\n3. **Retention Hook**: Why will users return tomorrow?\n4. **Monetization**: How does this make money sustainably?\n\nWould you like me to dive deeper into any of these?`,
+    recommendations: ['Define your core user action', 'Map the first 5 minutes', 'Identify your "aha moment"']
+  };
+}
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
+function titleCase(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function formatMarkdownLite(str) {
+  return str
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^• (.+)$/gm, '<li>$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm, '<li><strong>$1.</strong> $2</li>')
+    .replace(/\n/g, '<br>');
+}
+
+function copyOutput() {
+  if (!generatedOutput) return;
+  const text = JSON.stringify(generatedOutput.output, null, 2);
+  navigator.clipboard.writeText(text).then(() => alert('Output copied to clipboard!'));
+}
+
+function downloadOutput() {
+  if (!generatedOutput) return;
+  const text = JSON.stringify(generatedOutput.output, null, 2);
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `killframe-${currentMode}-output.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Mobile toggles
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('overlay').classList.toggle('visible');
+}
+
+function toggleAI() {
+  document.getElementById('ai-panel').classList.toggle('mobile-open');
+  document.getElementById('overlay').classList.toggle('visible');
+}
+
+document.getElementById('overlay').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('ai-panel').classList.remove('mobile-open');
+  document.getElementById('overlay').classList.remove('visible');
+});
+
+// ─── Initialize ───────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  selectMode('game');
+});
+</script>
+
+</body>
+</html>
