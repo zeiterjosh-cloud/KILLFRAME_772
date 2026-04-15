@@ -786,7 +786,7 @@
       <a href="#" class="nav-item" onclick="selectExpert('finance'); return false;">
         <span class="icon">💰</span> Financial Adviser
       </a>
-      <a href="#" class="nav-item" onclick="selectExpert('game'); return false;">
+      <a href="#" class="nav-item" onclick="selectExpert('gameDesign'); return false;">
         <span class="icon">🎮</span> Game Designer
       </a>
       <a href="#" class="nav-item" onclick="selectExpert('marketing'); return false;">
@@ -893,7 +893,7 @@
         <button class="expert-btn" data-expert="fitness" onclick="selectExpert('fitness')">
           <span class="expert-icon">💪</span> Fitness
         </button>
-        <button class="expert-btn" data-expert="game" onclick="selectExpert('game')">
+        <button class="expert-btn" data-expert="gameDesign" onclick="selectExpert('gameDesign')">
           <span class="expert-icon">🎮</span> Game
         </button>
         <button class="expert-btn" data-expert="marketing" onclick="selectExpert('marketing')">
@@ -1025,7 +1025,7 @@ const EXPERTS = {
   travel: { name: 'Travel Expert', icon: '✈️', greeting: 'I specialize in travel apps, itineraries, and booking flows.' },
   finance: { name: 'Financial Adviser', icon: '💰', greeting: 'I help with budgeting, fintech, and financial app compliance.' },
   fitness: { name: 'Fitness Coach', icon: '💪', greeting: 'I\'ll help you build engaging fitness apps with effective programs.' },
-  game: { name: 'Game Designer', icon: '🎮', greeting: 'Let\'s create addictive mechanics! I know all about loops and player psychology.' },
+  gameDesign: { name: 'Game Designer', icon: '🎮', greeting: 'Let\'s create addictive mechanics! I know all about loops and player psychology.' },
   marketing: { name: 'Marketing Strategist', icon: '📈', greeting: 'I\'ll help with ASO, user acquisition, viral mechanics, and retention.' }
 };
 
@@ -1274,8 +1274,8 @@ function generateAppCode(name) {
     }
     function checkIn(id){
       const h=items.find(x=>x.id===id);if(!h||h.last===today())return;
-      const yes=new Date(Date.now()-86400000).toDateString();
-      h.streak=h.last===yes?h.streak+1:1;h.last=today();save();render();
+      const yesterday=new Date(Date.now()-86400000).toDateString();
+      h.streak=h.last===yesterday?h.streak+1:1;h.last=today();save();render();
     }
     function render(){
       document.getElementById('list').innerHTML=items.map(h=>\`

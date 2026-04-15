@@ -515,6 +515,7 @@ let state = {
   achievements: {},
   streak: 0,
   lastLogin: null,
+  lastLoginTimestamp: null,
   luckyEventActive: false,
 };
 
@@ -835,6 +836,7 @@ function checkDailyStreak() {
   }
   
   state.lastLogin = today;
+  state.lastLoginTimestamp = Date.now();
   saveGame();
 }
 
@@ -942,8 +944,8 @@ function loadGame() {
       });
       
       // Calculate offline earnings
-      if (state.lastLogin && state.cps > 0) {
-        const lastTime = new Date(state.lastLogin).getTime();
+      if (state.lastLoginTimestamp && state.cps > 0) {
+        const lastTime = state.lastLoginTimestamp;
         const now = Date.now();
         const offlineSeconds = Math.min((now - lastTime) / 1000, 3600 * 8); // Max 8 hours
         if (offlineSeconds > 60) {
