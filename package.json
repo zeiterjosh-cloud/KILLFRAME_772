@@ -1,0 +1,24 @@
+{
+  "name": "killframe_772",
+  "version": "1.0.0",
+  "description": "KILLFRAME is a modular Three.js first-person shooter prototype with dedicated player, weapon, enemy AI, killframe logic, UI, and game-management systems.",
+  "main": "main.js",
+  "scripts": {
+    "start": "python3 -m http.server 8080"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeiterjosh-cloud/KILLFRAME_772.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/zeiterjosh-cloud/KILLFRAME_772/issues"
+  },
+  "homepage": "https://github.com/zeiterjosh-cloud/KILLFRAME_772#readme",
+  "dependencies": {
+    "three": "^0.164.1"
+  }
+}
