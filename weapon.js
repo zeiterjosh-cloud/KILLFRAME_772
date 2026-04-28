@@ -1,9 +1,10 @@
 import * as THREE from './node_modules/three/build/three.module.js';
 
 export class WeaponSystem {
-  constructor(camera, ui) {
+  constructor(camera, ui, domElement) {
     this.camera = camera;
     this.ui = ui;
+    this.domElement = domElement;
     this.fireRate = 9;
     this.damage = 25;
     this.damageMultiplier = 1;
@@ -25,6 +26,7 @@ export class WeaponSystem {
 
     window.addEventListener('mousedown', (event) => event.button === 0 && (this.triggerHeld = true));
     window.addEventListener('mouseup', () => (this.triggerHeld = false));
+    window.addEventListener('blur', () => (this.triggerHeld = false));
   }
 
   setHitables(hitables) {
@@ -35,7 +37,7 @@ export class WeaponSystem {
     this.damageMultiplier = multiplier;
   }
 
-  update(delta, elapsed, onShot, recoilCallback) {
+  update(delta, elapsed, onShot, recoilCallback, canFire = true) {
     if (this.flashTimer > 0) {
       this.flashTimer -= delta;
       const normalized = Math.max(this.flashTimer / 0.05, 0);
@@ -46,7 +48,8 @@ export class WeaponSystem {
       this.muzzleFlashMesh.material.opacity = 0;
     }
 
-    if (!this.triggerHeld) {
+    const pointerLocked = document.pointerLockElement === this.domElement;
+    if (!this.triggerHeld || !canFire || !pointerLocked) {
       return;
     }
     if (elapsed - this.lastShotTime < 1 / this.fireRate) {

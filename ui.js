@@ -13,6 +13,10 @@ export class UISystem {
     this.toast = document.createElement('div');
     this.toast.className = 'toast';
 
+    this.gameOverBanner = document.createElement('div');
+    this.gameOverBanner.className = 'game-over';
+    this.gameOverBanner.textContent = 'GAME OVER';
+
     this.hud = document.createElement('div');
     this.hud.className = 'hud';
 
@@ -31,7 +35,7 @@ export class UISystem {
     healthTrack.appendChild(this.healthFill);
     health.append(healthLabel, healthTrack);
     this.hud.append(health, this.scoreLabel);
-    this.root.append(this.crosshair, this.killframeIndicator, this.toast, this.hud);
+    this.root.append(this.crosshair, this.killframeIndicator, this.toast, this.gameOverBanner, this.hud);
     parent.appendChild(this.root);
 
     this.hitTimer = 0;
@@ -58,6 +62,10 @@ export class UISystem {
     this.toast.textContent = isHit ? 'HIT CONFIRMED' : 'MISS';
     this.toast.classList.add('show');
     this.hitTimer = 0.18;
+  }
+
+  setGameOver(active) {
+    this.gameOverBanner.classList.toggle('show', active);
   }
 
   update(delta) {

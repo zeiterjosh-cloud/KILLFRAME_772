@@ -11,6 +11,7 @@ export class Enemy {
     this.alive = true;
     this.respawnTimer = 0;
     this.attackCooldown = 0;
+    this.tempDirection = new THREE.Vector3();
 
     const material = new THREE.MeshStandardMaterial({
       color: 0x1d2f66,
@@ -64,7 +65,7 @@ export class Enemy {
     else this.state = ENEMY_STATES.ATTACK;
 
     if (this.state === ENEMY_STATES.CHASE) {
-      const direction = new THREE.Vector3().subVectors(playerPosition, this.mesh.position).setY(0).normalize();
+      const direction = this.tempDirection.subVectors(playerPosition, this.mesh.position).setY(0).normalize();
       this.mesh.position.addScaledVector(direction, this.speed * delta);
       this.mesh.lookAt(playerPosition.x, this.mesh.position.y, playerPosition.z);
     }

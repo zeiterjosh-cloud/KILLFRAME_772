@@ -56,7 +56,7 @@ scene.add(ring);
 const enemyManager = new EnemyManager(scene);
 enemyManager.spawnInitial(6);
 
-const weapon = new WeaponSystem(camera, ui);
+const weapon = new WeaponSystem(camera, ui, renderer.domElement);
 weapon.setHitables(enemyManager.getHitableMeshes());
 
 window.addEventListener('resize', () => {
@@ -73,9 +73,14 @@ function onEnemyKilled() {
 
 function updateGame(delta, elapsed) {
   if (game.state === 'game_over') {
-    ui.showHitMarker(false);
+    ui.setGameOver(true);
+    ui.setHealth(game.health, game.maxHealth);
+    ui.setScore(game.score);
+    ui.setStats(killframe.getAccuracy(), killframe.getAverageHitReaction());
+    ui.update(delta);
     return;
   }
+  ui.setGameOver(false);
 
   killframe.update(delta);
   player.update(delta * killframe.timeScale);
@@ -97,7 +102,8 @@ function updateGame(delta, elapsed) {
         ui.showHitMarker(true);
       }
     },
-    (kick) => player.addRecoil(kick)
+    (kick) => player.addRecoil(kick),
+    game.state === 'playing'
   );
 
   ui.setKillframeActive(killframe.killframeActive);

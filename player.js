@@ -13,6 +13,7 @@ export class PlayerController {
     this.input = { forward: 0, right: 0 };
     this.keyState = { forward: false, back: false, left: false, right: false };
     this.velocity = new THREE.Vector3();
+    this.targetVelocity = new THREE.Vector3();
     this.forward = new THREE.Vector3();
     this.right = new THREE.Vector3();
     this.position = new THREE.Vector3(0, 1.72, 9);
@@ -68,7 +69,7 @@ export class PlayerController {
     this.forward.set(Math.sin(this.lookYaw), 0, Math.cos(this.lookYaw));
     this.right.crossVectors(this.forward, WORLD_UP).normalize();
 
-    const targetVelocity = new THREE.Vector3();
+    const targetVelocity = this.targetVelocity.set(0, 0, 0);
     if (hasInput) {
       targetVelocity
         .addScaledVector(this.forward, this.input.forward)
