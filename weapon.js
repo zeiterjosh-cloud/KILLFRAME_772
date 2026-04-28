@@ -48,8 +48,8 @@ export class WeaponSystem {
       this.muzzleFlashMesh.material.opacity = 0;
     }
 
-    const pointerLocked = document.pointerLockElement === this.domElement;
-    if (!this.triggerHeld || !canFire || !pointerLocked) {
+    const isPointerLocked = document.pointerLockElement === this.domElement;
+    if (!this.triggerHeld || !canFire || !isPointerLocked) {
       return;
     }
     if (elapsed - this.lastShotTime < 1 / this.fireRate) {
