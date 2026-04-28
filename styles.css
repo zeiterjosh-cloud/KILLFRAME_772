@@ -1,0 +1,164 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at top, #121625, #04050a 65%);
+}
+
+canvas {
+  display: block;
+}
+
+.ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(180, 236, 255, 0.92);
+  box-shadow: 0 0 14px rgba(44, 203, 255, 0.9);
+}
+
+.crosshair::before {
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.crosshair::after {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.hud {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.health {
+  width: 260px;
+}
+
+.health label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 7px;
+  letter-spacing: 0.12em;
+  opacity: 0.88;
+}
+
+.health-track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.health-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #00f0ff, #00ffa2);
+  box-shadow: 0 0 18px rgba(0, 255, 194, 0.7);
+  transition: width 120ms linear;
+}
+
+.score {
+  text-align: right;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  white-space: pre;
+}
+
+.killframe-indicator {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.92);
+  font-size: 28px;
+  letter-spacing: 0.25em;
+  font-weight: 800;
+  opacity: 0;
+  color: #8af2ff;
+  text-shadow: 0 0 8px #00ffff, 0 0 25px rgba(0, 255, 255, 0.9), 0 0 48px rgba(0, 209, 255, 0.75);
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.killframe-indicator.active {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  animation: pulse 700ms ease-in-out infinite alternate;
+}
+
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  color: rgba(201, 241, 255, 0.85);
+  transition: opacity 180ms ease;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.game-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: #ff8bc2;
+  text-shadow: 0 0 14px rgba(255, 96, 178, 0.95), 0 0 36px rgba(255, 43, 153, 0.8);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.game-over.show {
+  opacity: 1;
+}
+
+@keyframes pulse {
+  from {
+    text-shadow: 0 0 8px #00ffff, 0 0 22px rgba(0, 255, 255, 0.88), 0 0 42px rgba(0, 209, 255, 0.72);
+  }
+  to {
+    text-shadow: 0 0 12px #00ffff, 0 0 32px rgba(0, 255, 255, 1), 0 0 64px rgba(0, 209, 255, 0.9);
+  }
+}
